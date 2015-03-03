@@ -1,0 +1,66 @@
+Chunks: 16^3
+Tick rate: 10 per second
+N chunks per district proc, not necessarily (but most likely) contiguous
+
+Districts own their entities; when an entity moves into a different district, there is a handoff
+between procs. (What happens if an entity moves so fast that it passes through three districts in a tick?)
+
+Simulation implemented in terms of signals; signals travel at most 16 blocks in a tick, so that
+a chunk can resolve after all of its neighbors have finished sending their signals. (Can this
+deal with teleportation and other such long-range notions? Can this be solved by making those
+signals wait two ticks?)
+
+- Scale:
+At minecraft walk speed, you can go 15km in an hour. Let's let that be the distance to travel
+back to your starting location around the wrapping square map. With 16^3 chunks and 16 chunks
+total from bedrock to sky, a 15x15km world gives us a total of 14 million chunks, which is pretty
+reasonable storage-wise, especially considering that at least half of those chunks will just be
+empty air, and the majority of the remainder will be dominated by one block type.
+
+- Unloaded chunks:
+Some signals will not propogate into unloaded chunks, or else can somehow affect global chunk state
+(e.g. atmoshperic effects?) without having to load block data.  Other signals will cause chunks
+to become loaded.
+
+We may also need meta-chunks to store this kind of information, otherwise trying to propogate it
+throughout all unloaded chunks could get extremely costly.
+
+- Lighting:
+Lighting is implemented as a vector+spread property on blocks, one per light source. When blocks
+change, they emit a signal in the vector+spread directions to propogate recalculation of light
+levels. Even sunlight should be able to work this way, if you consider the source to be any
+block where the sunlight (going straight down) hits.
+
+Questions:
+  - Will this be too slow?
+  - Can we stop pointless changes earlier on (e.g. a new block being created very high in mid-air,
+    or sunlight being propogated to a block that's already lit by sunlight) by stopping signals
+    when they don't alter any state as they travel through a block?
+
+- Volumetric liquid flow
+
+Suppose a block of water is removed, and is now a block of air. We want neighboring blocks to flow
+into it.
+
+Possible approach, with neighbor information system: 
+1. If block above is water, then this block emits a flow signal to the block above asking it
+   to send water downwards. (P1)
+2. Otherwise, if any blocks to the sides are water and have greater volume than this
+   block, then this block sends flow signals to all those blocks asking for enough water
+   to increase its own volume to a new average balance. (P1)
+4. The flow-source blocks reduce their own volume by the amount requested in the signals
+   received, then emit a new signal back to the origin blocks indicating that they should increase
+   their volume by the matching amount. (P2)
+4. Original block increases its own fill volume. (P3)
+
+If I was willing to allow the original block to increase its volume before sending out the
+signal, I could reduce this to two phases, but that might introduce a possible duplication
+bug.
+
+- Pneumatic tubes
+Signal propogation speed at less than maximum; some tubes might be slower than 160 blocks/sec.
+When a signal is moving through a block slowly, we want to see the position of the item move
+within the block space (e.g. from 0.2m to 0.7m if the block moves half a meter per tick).
+
+- Plant growth
+Infrequent tick events; don't want to have to re-run plant growth checks every tick.
