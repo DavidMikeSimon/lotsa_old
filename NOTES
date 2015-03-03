@@ -39,23 +39,33 @@ Questions:
 
 - Volumetric liquid flow
 
+Must conserve total amount of water; while water is travelling between blocks, that quantity is
+"contained" within the signal itself.
+
 Suppose a block of water is removed, and is now a block of air. We want neighboring blocks to flow
-into it.
+into it. Impelement with check condition "gravity_water_difference" which triggers on air block or
+non-full water block to the side of (or above) water block. Condition does not trigger on very small
+differences; this can be used to diffuse a change instead of spreading an increasingly small wave across
+an entire water body surface (which might be an ocean!)
 
-Possible approach, with neighbor information system: 
-1. If block above is water, then this block emits a flow signal to the block above asking it
-   to send water downwards. (P1)
-2. Otherwise, if any blocks to the sides are water and have greater volume than this
-   block, then this block sends flow signals to all those blocks asking for enough water
-   to increase its own volume to a new average balance. (P1)
-4. The flow-source blocks reduce their own volume by the amount requested in the signals
-   received, then emit a new signal back to the origin blocks indicating that they should increase
-   their volume by the matching amount. (P2)
-4. Original block increases its own fill volume. (P3)
-
-If I was willing to allow the original block to increase its volume before sending out the
-signal, I could reduce this to two phases, but that might introduce a possible duplication
-bug.
+1. Condition triggers. Handler checks the block above for water. If block above does not have enough water to fill
+   target block, it also checks side blocks. It then sends a "negative_water_pressure" signal towards each of the
+   valid blocks it could get water from, with the amount of water requested divided among them in proportion to their
+   relative delta volumes. (P1)
+2. Those blocks receive the "negative_water_pressure" signal, reduce their own water volume by up to requested amount,
+   then emit a "water_flow" signal (containing that volume) in the direction that the negative_water_pressure signal
+   came from. (P2)
+   If more than one negative_water_pressure signal received at same time, divide flow
+   among them.
+3. Original block receives "water_flow" signals, increases its volume by that much. If its volume goes over 1, it emits
+   the remainder in a "water_flow" signal upwards. (P3)
+ 
+ 
+Questions:
+1. What happens if I remove a bunch of water blocks over a short period of time and these signals start interacting? Does
+   it do the right thing?
+2. Is there a situation where this could end up with a steadily-growing pile of signals spreading out? Is there some
+   general way to define, detect, or (best of all) provably prevent this situation?
 
 - Pneumatic tubes
 Signal propogation speed at less than maximum; some tubes might be slower than 160 blocks/sec.
