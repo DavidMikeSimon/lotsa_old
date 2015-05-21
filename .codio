@@ -3,7 +3,7 @@
 
 // Run button configuration
   "commands": {
-        "Node version": "node --version"
+        "Mix test": "mix test"
   },
 
 // Preview button configuration
