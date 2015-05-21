@@ -2,8 +2,39 @@
 <html>
 <head>
     <title>Foo!</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.8/angular.js"></script>
+    <script src="http://rawgit.com/gdi2290/angular-websocket/v1.0.9/angular-websocket.js"></script>
+    <script src="http://cdn.rawgit.com/jashkenas/coffee-script/master/extras/coffee-script.js"></script>
 </head>
 <body>
-Bar!
+    <script type="text/coffeescript">
+        angular.module('WerldClient', ['ngWebSocket'])
+        
+        angular.module('WerldClient').factory 'MyData', ($websocket, $location) ->
+            dataStream = $websocket("ws://#{$location.host()}:#{$location.port()}/websocket")
+
+            collection = []
+
+            dataStream.onMessage (message) ->
+                collection.push message.data
+            
+            dataStream.onOpen ->
+                dataStream.send("Foo")
+
+            return {collection: collection}
+            
+        angular.module('WerldClient').controller 'SomeController', ($scope, MyData) ->
+            $scope.MyData = MyData
+         
+        angular.bootstrap(document.body, ['WerldClient'])
+    </script>
+    
+    <section ng-controller="SomeController">
+        <ul>
+            <li ng-repeat="data in MyData.collection track by $index">
+                {{ data }}
+            </li>
+        </ul>
+    </section>
 </body>
 </html>
