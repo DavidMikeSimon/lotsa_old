@@ -26,6 +26,10 @@ defmodule Werld.Mixfile do
   #
   # Type `mix help deps` for more examples and options
   defp deps do
-    [{:cowboy, "~> 1.0.0"}]
+    [
+        {:cowboy, "~> 1.0.0"},
+        {:exprotobuf, "~> 0.9.0"},
+        {:gpb, github: "tomas-abrahamsson/gpb", tag: "3.17.2"}
+    ]
   end
 end
