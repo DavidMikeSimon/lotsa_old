@@ -1,4 +1,4 @@
-package werld;
+package Proto;
 
 message Chunk {
     required sint32 x = 1;

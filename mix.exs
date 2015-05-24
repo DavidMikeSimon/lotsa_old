@@ -2,34 +2,33 @@ defmodule Werld.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :werld,
-     version: "0.0.1",
-     elixir: "~> 1.0",
-     deps: deps]
+    [
+        app: :werld,
+        version: "0.0.1",
+        elixir: "~> 1.0",
+        deps: deps,
+        aliases: aliases
+    ]
   end
 
-  # Configuration for the OTP application
-  #
-  # Type `mix help compile.app` for more information
   def application do
-    [applications: [:logger, :cowboy],
-     mod: {Werld.Cowboy, []}]
+    [
+        applications: [:logger, :cowboy],
+        mod: {Werld.Cowboy, []}
+    ]
   end
 
-  # Dependencies can be Hex packages:
-  #
-  #   {:mydep, "~> 0.3.0"}
-  #
-  # Or git/path repositories:
-  #
-  #   {:mydep, git: "https://github.com/elixir-lang/mydep.git", tag: "0.1.0"}
-  #
-  # Type `mix help deps` for more examples and options
   defp deps do
     [
         {:cowboy, "~> 1.0.0"},
-        {:exprotobuf, "~> 0.9.0"},
-        {:gpb, github: "tomas-abrahamsson/gpb", tag: "3.17.2"}
+        {:exprotoc, github: "johnfoconnor/exprotoc"}
+    ]
+  end
+
+  defp aliases do
+    [
+        compile: ["exprotoc.build proto --prefix Werld", "compile"],
+        clean: ["clean", "exprotoc.clean"]
     ]
   end
 end

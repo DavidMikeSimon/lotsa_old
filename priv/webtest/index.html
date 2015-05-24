@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Foo!</title>
+    <script 
     <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.8/angular.js"></script>
     <script src="http://rawgit.com/gdi2290/angular-websocket/v1.0.9/angular-websocket.js"></script>
     <script src="http://cdn.rawgit.com/jashkenas/coffee-script/master/extras/coffee-script.js"></script>
@@ -16,7 +17,14 @@
             collection = []
 
             dataStream.onMessage (message) ->
-                collection.push message.data
+                if message.data instanceof Blob
+                    #fileReader = new FileReader()
+                    #arrayBuffer = null
+                    #fileReader.onload = -> arrayBuffer = this.result
+                    #fileReader.readAsArrayBuffer message.data
+                    
+                else
+                    collection.push message.data
             
             dataStream.onOpen ->
                 dataStream.send("Foo")

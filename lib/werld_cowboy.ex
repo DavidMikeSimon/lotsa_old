@@ -4,7 +4,7 @@ defmodule Werld.Cowboy do
     def start(_type, _args) do
         dispatch = :cowboy_router.compile([
           {:_, [
-            {"/", :cowboy_static, {:priv_file, :werld, "index.html"}},
+            {"/", :cowboy_static, {:priv_file, :werld, "webtest/index.html"}},
             {"/websocket", Werld.Cowboy.WebSocketHandler, []}
           ]}
         ])

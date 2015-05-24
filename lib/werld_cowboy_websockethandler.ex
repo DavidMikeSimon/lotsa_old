@@ -10,9 +10,9 @@ defmodule Werld.Cowboy.WebSocketHandler do
         {:ok, req, :undefined_state}
     end
 
-    def websocket_handle({:text, msg}, req, state) do
-        chunk = Werld.Messages.Chunk.new(x: 1, y: 2, z: 3)
-        enc = Werld.Messages.Chunk.encode(chunk)
+    def websocket_handle({:text, _msg}, req, state) do
+        chunk = Werld.Proto.Chunk.new(x: 1, y: 2, z: 3)
+        enc = Werld.Proto.Chunk.encode(chunk)
         {:reply, {:binary, enc}, req, state}
     end
 

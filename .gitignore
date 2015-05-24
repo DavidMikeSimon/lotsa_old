@@ -1,4 +1,5 @@
 /_build
 /deps
+/lib/exprotoc
 erl_crash.dump
 *.ez
