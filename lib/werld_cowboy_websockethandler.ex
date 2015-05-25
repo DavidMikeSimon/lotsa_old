@@ -21,7 +21,7 @@ defmodule Werld.Cowboy.WebSocketHandler do
     end
 
     def websocket_info({:timeout, _ref, msg}, req, state) do
-        :erlang.start_timer(1000, self(), "How' you doin'?")
+        :erlang.start_timer(5000, self(), "How' you doin'?")
         {:reply, {:text, msg}, req, state}
     end
 

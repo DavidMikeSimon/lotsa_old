@@ -3,3 +3,5 @@
 /lib/exprotoc
 erl_crash.dump
 *.ez
+.settings
+npm-debug.log
