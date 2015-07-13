@@ -13,7 +13,7 @@ angular.module('app.services', [])
     $http.get('proto/werld.proto')
     .then (result) =>
         protoBuilder = dcodeIO.ProtoBuf.loadProto(result.data)
-        Proto = protoBuilder.build("Proto")
+        Proto = protoBuilder.build("WerldProto")
         dataStream = new WebSocket("ws://#{$location.host()}:3000/websocket")
         dataStream.binaryType = "arraybuffer"
 
