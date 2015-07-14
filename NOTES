@@ -74,3 +74,85 @@ within the block space (e.g. from 0.2m to 0.7m if the block moves half a meter p
 
 - Plant growth
 Infrequent tick events; don't want to have to re-run plant growth checks every tick.
+
+---------------
+----- Lua -----
+---------------
+
+There are several choices to make when deciding how to integrate Lua.
+
+1. Inside Erlang VM or outside?
+
+Inside: This is very fast, but we are responsible for writing C code that will not crash (because
+then the entire erlang VM goes down) and that will not hold onto the thread of execution for more
+than about a millisecond (according to a copy/pasted section in both the erl_nif and driver_entry
+docs in the erlang manual).
+
+# Subchoice: NIF or port driver. If we use a NIF then the lua c api will be accessible as though
+it were an erlang library, or if we use a port driver then it will act like an erlang process.
+See https://github.com/vinoski/bitwise for some modern NIF examples.
+
+Outside: This is slower due to the overhead of transferring data around (though how much slower?)
+but much safer. However, we still have to make sure that any one lua call doesn't block for too long,
+in order to avoid causing backlogging.
+
+# Subchoice: Port or C node. If we write a port and use erl_interface (aka EI) then Erlang will
+start an OS process(es?) for us, or if we write a C node then we will be responsible for starting
+a separate OS process ourselves.
+
+# Subchoice: Threading? Multiple OS processes? They both make me sad, but it may be necessary
+to do something like this.
+
+2. Which Lua implementation?
+
+Standard Lua: This is up to version 5.3 now, which introduces proper integer support, which might
+be useful (though perhaps not as much as I think). Some Lua libraries now only work on >=5.2 or
+5.3.
+
+LuaJIT: This is a heavily optimized reimplementation of Lua 5.1 (on the order of 2-10x faster according
+to their benchmarks) and introduces some other additional features:
+- FFI: Makes it much simpler to call C functions from Lua. In theory this has been ported to standard
+lua as well, but the port seems to be dead or dying.
+- CoCo: Allows Lua to yield even when there's a C call in the current stack. Normally, Lua coroutines
+cannot yield when inside iterators, callbacks (including table.foreach!) and any other situation
+where the C stack would have to be saved and restored along with the Lua stack. CoCo solves this
+problem and lets you yield from anywhere.
+
+3. How to avoid blocking?
+
+Require quick returns: Just try to write the Lua so that scripts return as soon as possible.
+Maybe this won't actually turn out to be that hard?
+
+Manual yield: Use the Lua coroutine functionality to yield partway through execution of long scripts.
+Where and how often to yield will have to be figured out for each script, so this might
+end up being more trouble than it is worth, and could actually slow things down if we are
+yielding unnecessarily a lot.
+
+Dirty NIFs: Documentation on this is frankly pretty sparse and obtuse, but apparently Erlang
+has a feature where it can use a different kind of scheduler for NIFs that are expected to
+take longer to run than would normally be acceptable.
+
+lua_sethook after N instructions: There's a debugging hook in Lua that can be set to run a C
+function after some amount of Lua instructions have been executed. From there, it is possible
+to yield the Lua state. This might have some overhead on the Lua executor, and I don't know
+if this works with LuaJit. If I were ambitious I could try and tie this into
+the enif_consume_timeslice and enif_schedule_nif api functions which allow a C NIF to yield to
+Erlang after performing some amount of work. See https://github.com/vinoski/bitwise
+
+lua_sethook with timer:
+We can call lua_sethook to run after 1 instruction from a timer in another thread
+(or a unix signal handler). This might cause less overhead than the above approach.
+For implementations inside the Erlang VM, it might be possible to use the system_monitor/2
+function to detect misbehavior, but I'm not entirely sure how this is supposed to
+happen on a single core.
+
+4. How to time out runaway scripts?
+If a lua script misbehaves and is taking way too long to return and/or yield, we need to
+kill it somehow.
+
+Kill C process: If we are using an external OS process for Lua, we can simply kill that
+whole process and start it up again.
+
+lua_sethook: The same anti-blocking approaches from the "How to avoid blocking?" question
+could also work for getting out of runaway scripts; we just don't even bother to yield the Lua
+state, but instead get rid of it.
