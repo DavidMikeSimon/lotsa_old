@@ -1,6 +1,7 @@
 /_build
 /deps
 /lib/exprotoc
+/.vagrant
 erl_crash.dump
 *.ez
 .settings

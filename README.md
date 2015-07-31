@@ -1,4 +1,12 @@
 Werld
 =====
 
-** TODO: Add description **
+Experiment in Elixir with websockets and protobuf.
+
+## Starting development
+
+```
+vagrant up
+vagrant ssh
+./setup.sh
+```
