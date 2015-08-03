@@ -28,6 +28,8 @@ exports.config =
         'js/dontUseMe' : /^app/ # dirty hack for Jade compiling.
 
   plugins:
+    autoReload:
+      port: 9485
     jade:
         pretty: yes # Adds pretty-indentation whitespaces to output (false by default)
     jade_angular:

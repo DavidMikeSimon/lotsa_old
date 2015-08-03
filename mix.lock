@@ -1,4 +1,4 @@
 %{"cowboy": {:hex, :cowboy, "1.0.0"},
   "cowlib": {:hex, :cowlib, "1.0.1"},
-  "exprotoc": {:git, "git://github.com/johnfoconnor/exprotoc.git", "9ea75dbe3973a5cbbea5e12f5c2eac1d7aba1864", []},
+  "exprotoc": {:git, "git://github.com/2all/exprotoc.git", "f37768ea7aefd2fd5ffb07f20b22341aac2418cb", []},
   "ranch": {:hex, :ranch, "1.0.0"}}

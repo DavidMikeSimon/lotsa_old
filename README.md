@@ -9,4 +9,5 @@ Experiment in Elixir with websockets and protobuf.
 vagrant up
 vagrant ssh
 ./setup.sh
+./run.sh
 ```

@@ -6,6 +6,12 @@ defmodule Werld.Mixfile do
         app: :werld,
         version: "0.0.1",
         elixir: "~> 1.0",
+        compilers: [:exprotoc, :elixir, :app],
+        exprotoc: [
+          paths: ["proto"],
+          files: ["werld.proto"],
+          prefix: "Werld"
+        ],
         deps: deps,
         aliases: aliases
     ]
@@ -21,13 +27,13 @@ defmodule Werld.Mixfile do
   defp deps do
     [
         {:cowboy, "~> 1.0.0"},
-        {:exprotoc, github: "johnfoconnor/exprotoc"}
+        {:exprotoc, github: "2all/exprotoc"}
     ]
   end
 
   defp aliases do
     [
-        compile: ["exprotoc.build proto --prefix Werld", "compile"],
+        #compile: ["exprotoc.build proto --prefix Werld", "compile"],
         clean: ["clean", "exprotoc.clean"]
     ]
   end

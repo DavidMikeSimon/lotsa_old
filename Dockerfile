@@ -7,6 +7,13 @@ RUN DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/erlang-solutions.deb
 # Update packages
 RUN apt-get update -q
 
+# Install dev dependencies
+RUN apt-get install -y elixir erlang-nox nodejs npm git
+RUN ln -s nodejs /usr/bin/node
+
+# Install dev tools
+RUN apt-get install entr git unzip
+
 # Enable and install SSH
 RUN rm -f /etc/service/sshd/down
 EXPOSE 22
@@ -29,10 +36,9 @@ RUN echo 'export LANG=en_US.utf-8' >> /home/vagrant/.bashrc
 RUN echo 'export LC_ALL=en_US.utf-8' >> /home/vagrant/.bashrc
 RUN echo 'cd /vagrant' >> /home/vagrant/.bashrc
 
-# Install dev dependencies
-RUN apt-get install -y elixir ruby nodejs npm entr tmux git
-RUN ln -s nodejs /usr/bin/node
-RUN gem install tmuxinator
+# Install erlang parsetools yecc files needed by exprotoc
+RUN curl -L https://github.com/otphub/parsetools/archive/OTP-18.0.zip > /tmp/parsetools.zip
+RUN unzip -j /tmp/parsetools.zip  'parsetools-OTP-18.0/include/*' -d /usr/lib/erlang/lib/parsetools-2.1/include
 
 # Clean up
 RUN apt-get clean
