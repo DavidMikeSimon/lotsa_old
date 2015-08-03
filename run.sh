@@ -1,3 +1,3 @@
 #!/bin/sh
 
-mix -R -m mix run --no-halt
+find lib proto -type f \! -name '*.sw?' \! -path 'lib/exprotoc/*' | entr -r mix run --no-halt

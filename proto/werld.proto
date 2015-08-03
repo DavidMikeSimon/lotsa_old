@@ -4,4 +4,5 @@ message Chunk {
     required sint32 x = 1;
     required sint32 y = 2;
     required sint32 z = 3;
+    required sint32 ver = 4;
 }
