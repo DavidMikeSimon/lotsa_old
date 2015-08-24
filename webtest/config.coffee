@@ -8,16 +8,16 @@ exports.config =
     wrapper: false
   paths:
     public: '_public'
-    watched: ['app', 'vendor', '../proto']
+    watched: ['app', '../proto']
   files:
     javascripts:
       joinTo:
         'js/app.js': /^app/
-        'js/vendor.js': /^(bower_components|vendor)/
+        'js/vendor.js': /^(bower_components)/
 
     stylesheets:
       joinTo:
-        'css/app.css': /^(app|vendor|bower_components)/
+        'css/app.css': /^(app|bower_components)/
       order:
         before: [
           'app/styles/app.less'

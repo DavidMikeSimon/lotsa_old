@@ -9,11 +9,11 @@ To start the server:
 ```
 vagrant up
 vagrant ssh
-./setup.sh
 ./run.sh
 ```
 
-To start the sample web client app (runs on http://localhost:3000):
+Then, to start the sample web client app (on http://localhost:3333), from
+another console:
 ```
 vagrant ssh
 cd webtest
