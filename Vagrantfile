@@ -6,10 +6,9 @@ Vagrant.configure(2) do |config|
     d.has_ssh = true
     d.name = "werld"
     d.remains_running = true
+    d.create_args = ["--privileged"] # To allow fuse for sshfs
   end
   config.ssh.port = 22
 
-  config.vm.network "forwarded_port", guest: 3000, host: 3000
-  config.vm.network "forwarded_port", guest: 3333, host: 3333
-  config.vm.network "forwarded_port", guest: 9485, host: 9485
+  config.vm.synced_folder ".", "/vagrant", type: "sshfs"
 end

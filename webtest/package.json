@@ -22,7 +22,6 @@
     "coffee-script-brunch": ">= 1.0 < 1.8",
     "css-brunch": ">= 1.0 < 1.8",
     "jade": "~0.33",
-    "jade-angularjs-brunch": "~0.0.5",
     "javascript-brunch": ">= 1.0 < 1.8",
     "less-brunch": ">= 1.0 < 1.8",
     "stylus-brunch": ">= 1.0 < 1.8",

@@ -1,7 +1,5 @@
 {
-  "name": "angular-brunch-seed",
-  "repo": "scotch/angular-brunch-seed",
-  "version": "0.3.0",
+  "name": "werld-webtest",
   "main": "_public/js/app.js",
   "ignore": [
     "**/.*",
@@ -13,23 +11,13 @@
     "jquery": "~2.0.3",
     "bootstrap-less": "~2.3.2",
     "bootstrap-less-themes": "https://github.com/angular-brunch/bootstrap-less-themes.git",
-    "protobuf": "3.8.2",
-    "angular-bootstrap": "~0.5.0",
-    "angular": "1.2.5",
-    "angular-sanitize": "1.2.5",
-    "angular-route": "1.2.5"
+    "protobuf": "3.8.2"
   },
   "overrides": {
     "bootstrap-less": {
       "ignore": [
         "*"
       ]
-    },
-    "angular-mocks": {
-      "main": "README.md"
     }
-  },
-  "resolutions": {
-    "angular": "1.2.5"
   }
 }

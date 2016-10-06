@@ -32,9 +32,6 @@ exports.config =
       port: 9485
     jade:
         pretty: yes # Adds pretty-indentation whitespaces to output (false by default)
-    jade_angular:
-        modules_folder: 'partials'
-        locals: {}
     afterBrunch: [
         'rm -rf _public/proto',
         'cp -a ../proto _public/proto'

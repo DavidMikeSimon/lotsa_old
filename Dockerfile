@@ -15,7 +15,8 @@ RUN apt-get update -q && apt-get install -y \
 	git \
 	unzip \
 	entr \
-	openssh-server
+	openssh-server \
+	sshfs
 RUN ln -s nodejs /usr/bin/node
 
 # Enable SSH
@@ -44,7 +45,7 @@ RUN echo 'cd /vagrant' >> /home/vagrant/.bashrc
 # Install erlang parsetools yecc files needed by exprotoc
 
 RUN curl -L https://github.com/otphub/parsetools/archive/OTP-18.0.zip > /tmp/parsetools.zip
-RUN unzip -j /tmp/parsetools.zip  'parsetools-OTP-18.0/include/*' -d /usr/lib/erlang/lib/parsetools-2.1/include
+RUN unzip -j /tmp/parsetools.zip  'parsetools-OTP-18.0/include/*' -d /usr/lib/erlang/lib/parsetools-*/include
 
 RUN apt-get clean
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -52,7 +53,9 @@ RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 # Install dependencies and set up build directories
 
 RUN mkdir /tmp/vagrant
-RUN chown vagrant:vagrant /tmp/vagrant
+RUN mkdir /tmp/vagrant/deps
+RUN mkdir /tmp/vagrant/_build
+RUN chown -R vagrant:vagrant /tmp/vagrant
 
 WORKDIR /tmp/vagrant
 USER vagrant
@@ -66,11 +69,6 @@ RUN mkdir bower_components
 COPY webtest/bower.json /tmp/vagrant/
 RUN yes | ./node_modules/.bin/bower install
 RUN rm bower.json
-
-COPY mix.* /tmp/vagrant/
-RUN yes | mix deps.get
-RUN yes | mix deps.compile
-RUN rm mix.*
 
 # phusion/baseimage init
 
