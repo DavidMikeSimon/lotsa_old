@@ -10,12 +10,11 @@ Vagrant.configure(2) do |config|
 
   config.ssh.port = 22
   config.gatling.rsync_on_startup = false
-  config.vm.network "forwarded_port", guest: 3333, host: 3333
 
   # Watch out for mix.lock, you need to manually copy it back if mix on guest updates it
   config.vm.synced_folder ".", "/vagrant", type: "rsync", rsync__exclude: [
     ".git/", ".vagrant/", "*.swp", "*.swo",
     "_build/", "deps/",
-    "webtest/node_modules/"
+    "webtest/node_modules/", "webtest/public/"
   ]
 end
