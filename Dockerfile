@@ -1,23 +1,30 @@
 FROM phusion/baseimage:0.9.17
 
-# Add elixir package source
+# Add package sources
 
 RUN curl https://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb > /tmp/erlang-solutions.deb
 RUN DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/erlang-solutions.deb
+RUN rm /tmp/erlang-solutions.deb
+RUN sed -i=orig 's/http:\/\/binaries/https:\/\/apt-mirror.openstack.blueboxgrid.com\/packages/' /etc/apt/sources.list.d/erlang-solutions.list
+
+RUN apt-add-repository -y ppa:brightbox/ruby-ng
+
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv 68576280
+RUN apt-add-repository 'deb https://deb.nodesource.com/node_4.x precise main'
 
 # Install packages
 
-RUN apt-get update -q && apt-get install -y \
-	elixir \
-	erlang-nox \
-	nodejs \
-	npm \
-	git \
-	unzip \
-	entr \
-	openssh-server \
-	sshfs
-RUN ln -s nodejs /usr/bin/node
+RUN apt-get update -q
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y erlang-nox
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y erlang-dev
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y elixir
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-server
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y ruby2.3
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y ruby2.3-dev
+
+RUN gem install rb-inotify rerun
 
 # Enable SSH
 
@@ -42,36 +49,32 @@ RUN echo 'export LANG=en_US.utf-8' >> /home/vagrant/.bashrc
 RUN echo 'export LC_ALL=en_US.utf-8' >> /home/vagrant/.bashrc
 RUN echo 'cd /vagrant' >> /home/vagrant/.bashrc
 
-# Install erlang parsetools yecc files needed by exprotoc
+# Fix locale problem for Erlang
 
-RUN curl -L https://github.com/otphub/parsetools/archive/OTP-18.0.zip > /tmp/parsetools.zip
-RUN unzip -j /tmp/parsetools.zip  'parsetools-OTP-18.0/include/*' -d /usr/lib/erlang/lib/parsetools-*/include
+RUN update-locale LC_ALL=en_US.UTF-8
 
-RUN apt-get clean
-RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# Install dependencies
 
-# Install dependencies and set up build directories
-
-RUN mkdir /tmp/vagrant
-RUN mkdir /tmp/vagrant/deps
-RUN mkdir /tmp/vagrant/_build
-RUN chown -R vagrant:vagrant /tmp/vagrant
-
-WORKDIR /tmp/vagrant
+RUN mkdir -p /vagrant/webtest
+RUN chown -R vagrant:vagrant /vagrant
 USER vagrant
 
-RUN mkdir node_modules
-COPY webtest/package.json /tmp/vagrant/
-RUN npm install
-RUN rm package.json
+WORKDIR /vagrant
+COPY mix.exs /vagrant
+COPY mix.lock /vagrant
+RUN LC_ALL=en_US.UTF-8 mix local.hex --force
+RUN LC_ALL=en_US.UTF-8 mix local.rebar --force
+RUN LC_ALL=en_US.UTF-8 mix deps.get
+RUN LC_ALL=en_US.UTF-8 mix deps.compile
 
-RUN mkdir bower_components
-COPY webtest/bower.json /tmp/vagrant/
-RUN yes | ./node_modules/.bin/bower install
-RUN rm bower.json
+WORKDIR /vagrant/webtest
+COPY webtest/package.json /vagrant/webtest
+RUN npm install
+
+USER root
+RUN chown -R vagrant:vagrant /vagrant
 
 # phusion/baseimage init
 
 WORKDIR /
-USER root
 CMD ["/sbin/my_init"]

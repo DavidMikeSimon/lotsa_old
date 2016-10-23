@@ -1,17 +1,32 @@
-**/.DS_Store
-nbproject
-manifest.mf
-build.xml
+# Numerous always-ignore extensions
+*.diff
+*.err
+*.orig
+*.log
+*.rej
+*.swo
+*.swp
+*.vi
+*~
+*.sass-cache
 
-node_modules
-bower_components
-
+# OS or Editor folders
+.DS_Store
+.cache
 .project
 .settings
-.idea/*
+.tmproj
+nbproject
+Thumbs.db
 
-_public
-node_modules/*
-npm-debug.log
+# NPM packages folder.
+node_modules/
 
-test/test-results.xml
+# Brunch folder for temporary files.
+tmp/
+
+# Brunch output folder.
+public/
+
+# Bower stuff.
+bower_components/
