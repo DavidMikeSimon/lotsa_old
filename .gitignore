@@ -1,6 +1,9 @@
 /_build
 /deps
 /.vagrant
+/vbin
+/webtest/public
+/webtest/node_modules
 erl_crash.dump
 *.ez
 .settings
