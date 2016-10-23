@@ -14,7 +14,9 @@
     "uglify-js-brunch": "^2.0.0",
     "clean-css-brunch": "^2.0.0",
     "auto-reload-brunch": "^2.0.0",
+    "copycat-brunch": "1.1.0",
     "jquery": "3.1.1",
-    "process": "0.11.9"
+    "process": "0.11.9",
+    "protobufjs": "5.0.1"
   }
 }

@@ -12,7 +12,7 @@ defmodule Werld.Mixfile do
 
   def application do
     [
-        applications: [:logger, :cowboy],
+        applications: [:logger, :cowboy, :exprotobuf],
         mod: {Werld.Cowboy, []}
     ]
   end

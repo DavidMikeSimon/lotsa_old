@@ -13,3 +13,11 @@ exports.files = {
 exports.server = {
   hostname: '0.0.0.0'
 }
+
+exports.plugins = {
+  copycat: {
+    "proto": ["../proto"],
+    verbose: true,
+    onlyChanged: true
+  }
+}
