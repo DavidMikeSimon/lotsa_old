@@ -7,6 +7,7 @@ defmodule Werld.Cowboy.WebSocketHandler do
 
     def websocket_init(_transport_name, req, _opts) do
         :erlang.start_timer(1000, self(), :send_chunk)
+        :erlang.start_timer(2000, self(), :send_message)
         {:ok, req, :undefined_state}
     end
 
@@ -17,7 +18,15 @@ defmodule Werld.Cowboy.WebSocketHandler do
     def websocket_info({:timeout, _ref, :send_chunk}, req, state) do
         :erlang.start_timer(2000, self(), :send_chunk)
         chunk = Werld.Proto.Chunk.new(x: 1, y: 2, z: 3, ver: 50)
-        enc = Werld.Proto.Chunk.encode(chunk)
+        msg = Werld.Proto.MessageToClient.new(msg: {:chunk, chunk})
+        enc = Werld.Proto.MessageToClient.encode(msg)
+        {:reply, {:binary, enc}, req, state}
+    end
+
+    def websocket_info({:timeout, _ref, :send_message}, req, state) do
+        :erlang.start_timer(5000, self(), :send_message)
+        msg = Werld.Proto.MessageToClient.new(msg: {:global_notice, "Stuff is happening"})
+        enc = Werld.Proto.MessageToClient.encode(msg)
         {:reply, {:binary, enc}, req, state}
     end
 

@@ -1,4 +1,16 @@
+syntax = "proto3";
+
 package WerldProto;
+
+message MessageToServer {
+}
+
+message MessageToClient {
+    oneof msg {
+        Chunk chunk = 1;
+        string global_notice = 2;
+    }
+}
 
 message Chunk {
     required sint32 x = 1;

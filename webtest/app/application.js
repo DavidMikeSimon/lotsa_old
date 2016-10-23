@@ -18,18 +18,24 @@ var App = {
 		var me = this;
 		me.log("Starting...");
 
-		var Chunk = WerldProto.Chunk;
-
 		var ws = new WebSocket("ws://" + window.location.hostname + ":3000/websocket");
 		ws.binaryType = 'arraybuffer';
 
-		ws.onmessage = function (event) {
-			var chunk = Chunk.decode(event.data);
-			me.log(chunk);
-		};
-
 		ws.onopen = function (event) {
 			me.log("Connected");
+		};
+
+		ws.onerror = function (event) {
+			me.log("WebSocket error", event);
+		}
+
+		ws.onclose = function (event) {
+			me.log("Connection closed", event);
+		}
+
+		ws.onmessage = function (event) {
+			var msg = WerldProto.MessageToClient.decode(event.data);
+			me.log(msg);
 		};
 	},
 

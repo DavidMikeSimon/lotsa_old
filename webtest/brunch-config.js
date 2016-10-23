@@ -16,8 +16,6 @@ exports.server = {
 
 exports.plugins = {
   copycat: {
-    "proto": ["../proto"],
-    verbose: true,
-    onlyChanged: true
+    "proto": ["../proto"]
   }
 }
