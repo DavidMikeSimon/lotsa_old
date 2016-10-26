@@ -6,21 +6,32 @@ defmodule Werld.Cowboy.WebSocketHandler do
     end
 
     def websocket_init(_transport_name, req, _opts) do
-        :erlang.start_timer(1000, self(), :send_chunk)
         :erlang.start_timer(2000, self(), :send_message)
         {:ok, req, :undefined_state}
     end
 
-    def websocket_handle(_data, req, state) do
-        {:ok, req, state}
+    def websocket_handle({:binary, data}, req, state) do
+        client_req = Werld.Proto.MessageToServer.decode(data)
+        response = case client_req.msg do
+            {:chunk_request, chunk_request} ->
+                Werld.Proto.MessageToClient.encode(
+                    Werld.Proto.MessageToClient.new(
+                        msg: {
+                            :chunk,
+                            Werld.Proto.Chunk.new(
+                                x: hd(chunk_request.coords).x,
+                                y: hd(chunk_request.coords).y,
+                                ver: 50
+                            )
+                        }
+                    )
+                )
+        end
+        {:reply, {:binary, response}, req, state}
     end
 
-    def websocket_info({:timeout, _ref, :send_chunk}, req, state) do
-        :erlang.start_timer(2000, self(), :send_chunk)
-        chunk = Werld.Proto.Chunk.new(x: 1, y: 2, z: 3, ver: 50)
-        msg = Werld.Proto.MessageToClient.new(msg: {:chunk, chunk})
-        enc = Werld.Proto.MessageToClient.encode(msg)
-        {:reply, {:binary, enc}, req, state}
+    def websocket_handle(_data, req, state) do
+        {:ok, req, state}
     end
 
     def websocket_info({:timeout, _ref, :send_message}, req, state) do
@@ -28,10 +39,6 @@ defmodule Werld.Cowboy.WebSocketHandler do
         msg = Werld.Proto.MessageToClient.new(msg: {:global_notice, "Stuff is happening"})
         enc = Werld.Proto.MessageToClient.encode(msg)
         {:reply, {:binary, enc}, req, state}
-    end
-
-    def websocket_info(_info, req, state) do
-        {:ok, req, state}
     end
 
     def websocket_terminate(_reason, _req, _state) do

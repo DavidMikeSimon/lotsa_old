@@ -23,6 +23,14 @@ var App = {
 
 		ws.onopen = function (event) {
 			me.log("Connected");
+			var msg = WerldProto.MessageToServer.encode({
+				chunk_request: {
+					coords: [
+						{ x: 3, y: 3 }
+					]
+				}
+			});
+			ws.send(msg.buffer);
 		};
 
 		ws.onerror = function (event) {

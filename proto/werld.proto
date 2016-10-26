@@ -3,6 +3,18 @@ syntax = "proto3";
 package WerldProto;
 
 message MessageToServer {
+    oneof msg {
+       ChunkRequest chunk_request = 1;
+    }
+}
+
+message ChunkRequest {
+    message Coord {
+        required sint32 x = 1;
+        required sint32 y = 2;
+    }
+
+    repeated Coord coords = 1;
 }
 
 message MessageToClient {
@@ -15,6 +27,5 @@ message MessageToClient {
 message Chunk {
     required sint32 x = 1;
     required sint32 y = 2;
-    required sint32 z = 3;
     required sint32 ver = 4;
 }
