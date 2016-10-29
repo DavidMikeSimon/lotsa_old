@@ -23,6 +23,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-server
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y ruby2.3
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y ruby2.3-dev
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y rsync
 
 RUN gem install rb-inotify rerun
 
@@ -55,24 +56,44 @@ RUN update-locale LC_ALL=en_US.UTF-8
 
 # Install dependencies
 
+RUN mkdir -p /vagrant/server
 RUN mkdir -p /vagrant/webtest
+COPY server/mix.exs /vagrant/server
+COPY server/mix.lock /vagrant/server
+COPY webtest/package.json /vagrant/webtest
 RUN chown -R vagrant:vagrant /vagrant
+
 USER vagrant
 
-WORKDIR /vagrant
-COPY mix.exs /vagrant
-COPY mix.lock /vagrant
+WORKDIR /vagrant/server
 RUN LC_ALL=en_US.UTF-8 mix local.hex --force
 RUN LC_ALL=en_US.UTF-8 mix local.rebar --force
 RUN LC_ALL=en_US.UTF-8 mix deps.get
 RUN LC_ALL=en_US.UTF-8 mix deps.compile
 
 WORKDIR /vagrant/webtest
-COPY webtest/package.json /vagrant/webtest
 RUN npm install
 
 USER root
 RUN chown -R vagrant:vagrant /vagrant
+
+# Set up runit services for server and webtest
+
+RUN mkdir -p /etc/service/werld-server/supervise
+RUN echo "#!/bin/sh" > /etc/service/werld-server/run
+RUN echo "set -e" >> /etc/service/werld-server/run
+RUN echo "test -e /vagrant/server/lib || exit 1" >> /etc/service/werld-server/run
+RUN echo "su vagrant -c \"cd /vagrant/server && rerun -b -d 'lib,test,../proto' -p '**/*.{ex,exs,proto}' --name werld -- elixir --sname werld -S mix run --no-halt | logger -i -t werld-server\"" >> /etc/service/werld-server/run
+RUN chmod a+x /etc/service/werld-server/run
+RUN chown -R root:root /etc/service/werld-server
+
+RUN mkdir -p /etc/service/werld-webtest/supervise
+RUN echo "#!/bin/sh" > /etc/service/werld-webtest/run
+RUN echo "test -e /vagrant/webtest/app || exit 1" >> /etc/service/werld-webtest/run
+RUN echo "su vagrant -c \"cd /vagrant/webtest && ./node_modules/brunch/bin/brunch watch --server | logger -i -t werld-webtest\"" >> /etc/service/werld-webtest/run
+RUN echo "set -e" >> /etc/service/werld-webtest/run
+RUN chmod a+x /etc/service/werld-webtest/run
+RUN chown -R root:root /etc/service/werld-webtest
 
 # phusion/baseimage init
 

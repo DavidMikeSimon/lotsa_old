@@ -3,11 +3,7 @@
   "description": "Simple test client for Werld",
   "author": "David Simon",
   "version": "0.1.0",
-  "scripts": {
-    "start": "./node_modules/brunch/bin/brunch watch --server"
-  },
-  "dependencies": {},
-  "devDependencies": {
+  "dependencies": {
     "brunch": "^2.0.0",
     "javascript-brunch": "^2.0.0",
     "css-brunch": "^2.0.0",

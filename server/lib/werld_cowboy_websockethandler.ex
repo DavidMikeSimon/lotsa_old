@@ -36,7 +36,7 @@ defmodule Werld.Cowboy.WebSocketHandler do
 
     def websocket_info({:timeout, _ref, :send_message}, req, state) do
         :erlang.start_timer(5000, self(), :send_message)
-        msg = Werld.Proto.MessageToClient.new(msg: {:global_notice, "Stuff is happening"})
+        msg = Werld.Proto.MessageToClient.new(msg: {:global_notice, "Stuff is really happening"})
         enc = Werld.Proto.MessageToClient.encode(msg)
         {:reply, {:binary, enc}, req, state}
     end

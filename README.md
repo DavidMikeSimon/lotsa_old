@@ -5,17 +5,8 @@ Experiment in Elixir with websockets and protobuf.
 
 ## Starting development
 
-To start the server:
-```
-vagrant up
-vagrant ssh
-./run.sh
-```
+Step 1: `vagrant up` to install all dependencies and start the development servers.
 
-Then, to start the sample web client app (on http://localhost:3333), from
-another console:
-```
-vagrant ssh
-cd webtest
-./run.sh
-```
+Step 2: `./sync-and-watch.sh` to start auto-rsync and also to follow output from VM.
+
+Step 3: Open browser to http://localhost:3333
