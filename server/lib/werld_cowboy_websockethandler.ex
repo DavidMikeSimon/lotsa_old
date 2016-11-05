@@ -21,7 +21,21 @@ defmodule Werld.Cowboy.WebSocketHandler do
                             Werld.Proto.Chunk.new(
                                 x: hd(chunk_request.coords).x,
                                 y: hd(chunk_request.coords).y,
-                                ver: 50
+                                ver: 50,
+                                block_runs: [
+                                    Werld.Proto.Chunk.BlockRun.new(
+                                        count: 20,
+                                        block_type: 0
+                                    ),
+                                    Werld.Proto.Chunk.BlockRun.new(
+                                        count: 50,
+                                        block_type: 1
+                                    ),
+                                    Werld.Proto.Chunk.BlockRun.new(
+                                        count: 186,
+                                        block_type: 0
+                                    ),
+                                ]
                             )
                         }
                     )

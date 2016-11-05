@@ -3,5 +3,5 @@
 set -e
 
 vagrant gatling-rsync-auto &
-docker logs werld -f &
+docker logs werld --tail 100 -f &
 wait
