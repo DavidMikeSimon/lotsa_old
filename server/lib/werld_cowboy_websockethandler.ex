@@ -19,8 +19,10 @@ defmodule Werld.Cowboy.WebSocketHandler do
                         msg: {
                             :chunk,
                             Werld.Proto.Chunk.new(
-                                x: hd(chunk_request.coords).x,
-                                y: hd(chunk_request.coords).y,
+                                pos: Werld.Proto.Coord.new(
+                                    x: hd(chunk_request.coords).x,
+                                    y: hd(chunk_request.coords).y
+                                ),
                                 ver: 50,
                                 block_runs: [
                                     Werld.Proto.Chunk.BlockRun.new(

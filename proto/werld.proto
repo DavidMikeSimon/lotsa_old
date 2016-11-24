@@ -1,36 +1,48 @@
 package WerldProto;
 
+///////////////////
+// Common
+///////////////////
+
+message Coord {
+    required sint32 x = 1;
+    required sint32 y = 2;
+}
+
+message Chunk {
+    required Coord pos = 1;
+    required sint32 ver = 2;
+
+    message BlockRun {
+        required uint32 count = 1;
+        required uint32 block_type = 2;
+    }
+
+    repeated BlockRun block_runs = 3;
+}
+
+///////////////////
+// Client -> Server
+///////////////////
+
+message ChunkRequest {
+    repeated Coord coords = 1;
+}
+
 message MessageToServer {
     oneof msg {
        ChunkRequest chunk_request = 1;
     }
 }
 
+///////////////////
+// Server -> Client
+///////////////////
+
 message MessageToClient {
     oneof msg {
         Chunk chunk = 1;
         string global_notice = 2;
+        string wat = 3;
     }
-}
-
-message Chunk {
-    message BlockRun {
-        required uint32 count = 1;
-        required uint32 block_type = 2;
-    }
-
-    required sint32 x = 1;
-    required sint32 y = 2;
-    required sint32 ver = 4;
-
-    repeated BlockRun block_runs = 5;
-}
-
-message ChunkRequest {
-    message Coord {
-        required sint32 x = 1;
-        required sint32 y = 2;
-    }
-
-    repeated Coord coords = 1;
 }

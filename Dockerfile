@@ -83,14 +83,14 @@ RUN mkdir -p /etc/service/werld-server/supervise
 RUN echo "#!/bin/sh" > /etc/service/werld-server/run
 RUN echo "set -e" >> /etc/service/werld-server/run
 RUN echo "test -e /vagrant/server/lib || exit 1" >> /etc/service/werld-server/run
-RUN echo "su vagrant -c \"cd /vagrant/server && rerun -b -d 'lib,test,../proto' -p '**/*.{ex,exs,proto}' --name werld -- elixir --sname werld -S mix run --no-halt | logger -i -t werld-server\"" >> /etc/service/werld-server/run
+RUN echo "su vagrant -c \"cd /vagrant/server && rerun -b -d 'lib,test,../proto' -p '**/*.{ex,exs,proto}' --name werld -- elixir --sname werld -S mix run --no-halt 2>&1 | logger -i -t werld-server\"" >> /etc/service/werld-server/run
 RUN chmod a+x /etc/service/werld-server/run
 RUN chown -R root:root /etc/service/werld-server
 
 RUN mkdir -p /etc/service/werld-webtest/supervise
 RUN echo "#!/bin/sh" > /etc/service/werld-webtest/run
 RUN echo "test -e /vagrant/webtest/app || exit 1" >> /etc/service/werld-webtest/run
-RUN echo "su vagrant -c \"cd /vagrant/webtest && ./node_modules/brunch/bin/brunch watch --server | logger -i -t werld-webtest\"" >> /etc/service/werld-webtest/run
+RUN echo "su vagrant -c \"cd /vagrant/webtest && ./node_modules/brunch/bin/brunch watch --server 2>&1 | logger -i -t werld-webtest\"" >> /etc/service/werld-webtest/run
 RUN echo "set -e" >> /etc/service/werld-webtest/run
 RUN chmod a+x /etc/service/werld-webtest/run
 RUN chown -R root:root /etc/service/werld-webtest

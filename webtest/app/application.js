@@ -4,6 +4,7 @@ var $ = require("jquery");
 var _ = require("lodash");
 var ProtoBuf = require("protobufjs");
 var SVG = require("svg.js");
+var ReconnectingWebSocket = require("reconnecting-websocket");
 
 var GRID_CELLS = 16;
 var GRID_CELL_SIZE = 32;
@@ -38,11 +39,16 @@ var Application = {
 		var me = this;
 		me.log("Starting...");
 
-		var ws = new WebSocket("ws://" + window.location.hostname + ":3000/websocket");
-		ws.binaryType = 'arraybuffer';
+		var wsPath = "ws://" + window.location.hostname + ":3000/websocket"
+		var ws = new ReconnectingWebSocket(wsPath, [], {
+			maxReconnectionDelay: 5000,
+			minReconnectionDelay: 250,
+			connectionTimeout: 500
+		});
 
 		ws.onopen = function (event) {
 			me.log("Connected");
+			ws.binaryType = 'arraybuffer';
 			var msg = WerldProto.MessageToServer.encode({
 				chunk_request: {
 					coords: [
@@ -53,12 +59,8 @@ var Application = {
 			ws.send(msg.buffer);
 		};
 
-		ws.onerror = function (event) {
-			me.log("WebSocket error", event);
-		}
-
 		ws.onclose = function (event) {
-			me.log("Connection closed", event);
+			me.log("Connection closed");
 		}
 
 		ws.onmessage = function (event) {

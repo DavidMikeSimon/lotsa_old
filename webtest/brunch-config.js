@@ -1,4 +1,7 @@
-// See http://brunch.io for documentation.
+exports.paths = {
+  watched: ['app', 'test', 'vendor', '../proto']
+}
+
 exports.files = {
   javascripts: {
     joinTo: {
@@ -16,7 +19,6 @@ exports.server = {
 
 exports.plugins = {
   copycat: {
-    "proto": ["../proto"],
-    onlyChanged: true
+    "proto": ["../proto"]
   }
 }
