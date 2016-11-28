@@ -7,10 +7,12 @@ defmodule Werld.Cowboy do
             {"/websocket", Werld.Cowboy.WebSocketHandler, []}
           ]}
         ])
-        {:ok, _} = :cowboy.start_http(:http, 100, [{:port, 3000}],
-                                      [{:env, [{:dispatch, dispatch}]}])
-
-        Werld.Cowboy.Supervisor.start_link
+        {:ok, _} = :cowboy.start_http(
+            :http,
+            100,
+            [{:port, 3000}],
+            [{:env, [{:dispatch, dispatch}]}]
+        )
     end
 
     def stop(_state) do

@@ -13,37 +13,10 @@ defmodule Werld.Cowboy.WebSocketHandler do
     def websocket_handle({:binary, data}, req, state) do
         client_req = Werld.Proto.MessageToServer.decode(data)
         response = case client_req.msg do
-            {:chunk_request, chunk_request} ->
-                Werld.Proto.MessageToClient.encode(
-                    Werld.Proto.MessageToClient.new(
-                        msg: {
-                            :chunk,
-                            Werld.Proto.Chunk.new(
-                                pos: Werld.Proto.Coord.new(
-                                    x: hd(chunk_request.coords).x,
-                                    y: hd(chunk_request.coords).y
-                                ),
-                                ver: 50,
-                                block_runs: [
-                                    Werld.Proto.Chunk.BlockRun.new(
-                                        count: 20,
-                                        block_type: 0
-                                    ),
-                                    Werld.Proto.Chunk.BlockRun.new(
-                                        count: 50,
-                                        block_type: 1
-                                    ),
-                                    Werld.Proto.Chunk.BlockRun.new(
-                                        count: 186,
-                                        block_type: 0
-                                    ),
-                                ]
-                            )
-                        }
-                    )
-                )
+            {:chunk_request, chunk_request} -> chunk_request_response(chunk_request)
         end
-        {:reply, {:binary, response}, req, state}
+        response_enc = Werld.Proto.MessageToClient.encode(response)
+        {:reply, {:binary, response_enc}, req, state}
     end
 
     def websocket_handle(_data, req, state) do
@@ -59,5 +32,32 @@ defmodule Werld.Cowboy.WebSocketHandler do
 
     def websocket_terminate(_reason, _req, _state) do
         :ok
+    end
+
+    defp chunk_request_response(chunk_request) do
+        Werld.Proto.MessageToClient.new(msg: {
+            :chunk,
+            Werld.Proto.Chunk.new(
+                pos: Werld.Proto.Coord.new(
+                    x: hd(chunk_request.coords).x,
+                    y: hd(chunk_request.coords).y
+                ),
+                ver: 50,
+                block_runs: [
+                    Werld.Proto.Chunk.BlockRun.new(
+                        count: 20,
+                        block_type: 0
+                    ),
+                    Werld.Proto.Chunk.BlockRun.new(
+                        count: 50,
+                        block_type: 1
+                    ),
+                    Werld.Proto.Chunk.BlockRun.new(
+                        count: 186,
+                        block_type: 0
+                    ),
+                ]
+            )
+        })
     end
 end
