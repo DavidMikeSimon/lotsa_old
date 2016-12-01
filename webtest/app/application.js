@@ -82,8 +82,6 @@ var Application = {
 				});
 			} else if (msg.msg == "global_notice") {
 				me.log("NOTICE: " + msg.global_notice);
-			} else if (msg.msg == "heartbeat_ack") {
-				me.log("Heartbeat ack:" + msg.heartbeat_ack);
 			}
 		};
 

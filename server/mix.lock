@@ -3,4 +3,5 @@
   "exprotobuf": {:hex, :exprotobuf, "1.2.1", "5658b9f602719e145cc9398715843f64bab635c2a448e366b8855db72deabfbd", [:mix], [{:gpb, "~> 3.24", [hex: :gpb, optional: false]}]},
   "gpb": {:hex, :gpb, "3.26.4", "d7abdeb17cf226f29bbc3bfbbe14281f35fdb34d6fb13a12819334af3d1af73f", [:rebar, :make], []},
   "gproc": {:hex, :gproc, "0.6.1", "4579663e5677970758a05d8f65d13c3e9814ec707ad51d8dcef7294eda1a730c", [:rebar3], []},
-  "ranch": {:hex, :ranch, "1.0.0", "e3ac054e4265de77e2d2696dd7e1d6a67b7525aade13ba10c860e7f499a0d433", [:make], []}}
+  "ranch": {:hex, :ranch, "1.0.0", "e3ac054e4265de77e2d2696dd7e1d6a67b7525aade13ba10c860e7f499a0d433", [:make], []},
+  "remix": {:hex, :remix, "0.0.2", "f06115659d8ede8d725fae1708920ef73353a1b39efe6a232d2a38b1f2902109", [:mix], []}}

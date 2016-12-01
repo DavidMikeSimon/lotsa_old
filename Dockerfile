@@ -7,8 +7,6 @@ RUN DEBIAN_FRONTEND=noninteractive dpkg -i /tmp/erlang-solutions.deb
 RUN rm /tmp/erlang-solutions.deb
 RUN sed -i=orig 's/http:\/\/binaries/https:\/\/apt-mirror.openstack.blueboxgrid.com\/packages/' /etc/apt/sources.list.d/erlang-solutions.list
 
-RUN apt-add-repository -y ppa:brightbox/ruby-ng
-
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv 68576280
 RUN apt-add-repository 'deb https://deb.nodesource.com/node_4.x precise main'
 
@@ -21,11 +19,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y elixir
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-server
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y ruby2.3
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y ruby2.3-dev
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y rsync
-
-RUN gem install rb-inotify rerun
 
 # Enable SSH
 
@@ -83,7 +77,7 @@ RUN mkdir -p /etc/service/werld-server/supervise
 RUN echo "#!/bin/sh" > /etc/service/werld-server/run
 RUN echo "set -e" >> /etc/service/werld-server/run
 RUN echo "test -e /vagrant/server/lib || exit 1" >> /etc/service/werld-server/run
-RUN echo "su vagrant -c \"cd /vagrant/server && rerun -b -d 'lib,test,../proto' -p '**/*.{ex,exs,proto}' --name werld -- ./run.sh 2>&1 | logger -i -t werld-server\"" >> /etc/service/werld-server/run
+RUN echo "su vagrant -c \"cd /vagrant/server && ./run.sh 2>&1 | logger -i -t werld-server\"" >> /etc/service/werld-server/run
 RUN chmod a+x /etc/service/werld-server/run
 RUN chown -R root:root /etc/service/werld-server
 

@@ -13,9 +13,10 @@ defmodule Werld.Cowboy.WebSocketHandler do
         client_req = Werld.Proto.MessageToServer.decode(data)
         case client_req.msg do
             {:chunk_request, chunk_request} ->
-                response = chunk_request_response(chunk_request)
-                response_enc = Werld.Proto.MessageToClient.encode(response)
-                {:reply, {:binary, response_enc}, req, state}
+                Enum.each chunk_request.coords, fn(coord) ->
+                    send self(), {:send_chunk, get_chunk(coord)}
+                end
+                {:ok, req, state}
             {:heartbeat, heartbeat} ->
                 response = Werld.Proto.MessageToClient.new(msg: {:heartbeat_ack, heartbeat})
                 response_enc = Werld.Proto.MessageToClient.encode(response)
@@ -28,40 +29,39 @@ defmodule Werld.Cowboy.WebSocketHandler do
         {:ok, req, state}
     end
 
-    def websocket_info(_data, req, state) do
-        {:ok, req, state}
+    def websocket_info({:send_chunk, chunk}, req, state) do
+        msg = Werld.Proto.MessageToClient.new(msg: {:chunk, chunk})
+        msg_enc = Werld.Proto.MessageToClient.encode(msg)
+        {:reply, {:binary, msg_enc}, req, state}
     end
 
     def websocket_terminate(_reason, _req, _state) do
         :ok
     end
 
-    defp chunk_request_response(chunk_request) do
-        Werld.Proto.MessageToClient.new(msg: {
-            :chunk,
-            Werld.Proto.Chunk.new(
-                pos: Werld.Proto.Coord.new(
-                    instance: hd(chunk_request.coords).instance,
-                    grid: hd(chunk_request.coords).grid,
-                    x: hd(chunk_request.coords).x,
-                    y: hd(chunk_request.coords).y
+    defp get_chunk(coord) do
+        Werld.Proto.Chunk.new(
+            pos: Werld.Proto.Coord.new(
+                instance: coord.instance,
+                grid: coord.grid,
+                x: coord.x,
+                y: coord.y
+            ),
+            ver: 50,
+            block_runs: [
+                Werld.Proto.Chunk.BlockRun.new(
+                    count: 20,
+                    block_type: 0
                 ),
-                ver: 50,
-                block_runs: [
-                    Werld.Proto.Chunk.BlockRun.new(
-                        count: 20,
-                        block_type: 0
-                    ),
-                    Werld.Proto.Chunk.BlockRun.new(
-                        count: 50,
-                        block_type: 1
-                    ),
-                    Werld.Proto.Chunk.BlockRun.new(
-                        count: 186,
-                        block_type: 0
-                    ),
-                ]
-            )
-        })
+                Werld.Proto.Chunk.BlockRun.new(
+                    count: 50,
+                    block_type: 1
+                ),
+                Werld.Proto.Chunk.BlockRun.new(
+                    count: 186,
+                    block_type: 0
+                ),
+            ]
+        )
     end
 end
