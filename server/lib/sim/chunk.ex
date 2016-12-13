@@ -12,11 +12,11 @@ defmodule Werld.Sim.Chunk do
   @chunk_size 16
 
   defp initial_state do
-    block_types = List.duplicate(0, @chunk_size*@chunk_size)
-    block_types = List.replace_at(block_types, 3, 1)
-    block_types = List.replace_at(block_types, 4, 1)
-    block_types = List.replace_at(block_types, 9, 1)
-    block_types = List.replace_at(block_types, 29, 1)
+    block_types = List.duplicate(1, @chunk_size*@chunk_size)
+    block_types = List.replace_at(block_types, 3, 2)
+    block_types = List.replace_at(block_types, 4, 2)
+    block_types = List.replace_at(block_types, 9, 2)
+    block_types = List.replace_at(block_types, 29, 2)
 
     %State{
       block_types: block_types
@@ -24,27 +24,27 @@ defmodule Werld.Sim.Chunk do
   end
 
   defp to_chunk_proto(state) do
-    alias Werld.Proto.Chunk.BlockRun
-
-    Werld.Proto.Chunk.new(
-      pos: Werld.Proto.Coord.new(
+    %Werld.Proto.Chunk{
+      pos: %Werld.Proto.Coord{
         instance: 0,
         grid: 0,
         x: 0,
         y: 0
-      ),
+      },
       ver: 50,
-      block_runs: Enum.map(calc_runs(state.block_types), fn({n, bt}) ->
-        BlockRun.new(count: n, block_type: bt)
-      end)
-    )
+      block_runs: calc_runs(state.block_types)
+    }
   end
 
   defp calc_runs(block_types) do
+    alias Werld.Proto.Chunk.BlockRun
+
     List.foldr(block_types, [], fn(cur_bt, acc) ->
       case acc do
-        [{n, ^cur_bt} | rest] -> [{n+1, cur_bt} | rest]
-        others -> [{1, cur_bt} | others]
+        [%BlockRun{count: n, block_type: ^cur_bt} | rest] ->
+          [%BlockRun{count: n+1, block_type: cur_bt} | rest]
+        others ->
+          [%BlockRun{count: 1, block_type: cur_bt} | others]
       end
     end)
   end

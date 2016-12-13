@@ -1,6 +1,9 @@
 defmodule Werld.Cowboy.WebSocketHandler do
   @behaviour :cowboy_websocket_handler
 
+  alias Werld.Proto.MessageToServer
+  alias Werld.Proto.MessageToClient
+
   def init({:tcp, :http}, _req, _opts) do
     {:upgrade, :protocol, :cowboy_websocket}
   end
@@ -10,7 +13,7 @@ defmodule Werld.Cowboy.WebSocketHandler do
   end
 
   def websocket_handle({:binary, data}, req, state) do
-    client_req = Werld.Proto.MessageToServer.decode(data)
+    client_req = MessageToServer.decode(data)
     case client_req.msg do
       {:chunk_request, chunk_request} ->
         Enum.each chunk_request.coords, fn(coord) ->
@@ -18,8 +21,8 @@ defmodule Werld.Cowboy.WebSocketHandler do
         end
         {:ok, req, state}
       {:heartbeat, heartbeat} ->
-        response = Werld.Proto.MessageToClient.new(msg: {:heartbeat_ack, heartbeat})
-        response_enc = Werld.Proto.MessageToClient.encode(response)
+        response = %MessageToClient{msg: {:heartbeat_ack, heartbeat}}
+        response_enc = MessageToClient.encode(response)
         {:reply, {:binary, response_enc}, req, state}
     end
   end
@@ -30,8 +33,8 @@ defmodule Werld.Cowboy.WebSocketHandler do
   end
 
   def websocket_info({:send_chunk, chunk}, req, state) do
-    msg = Werld.Proto.MessageToClient.new(msg: {:chunk, chunk})
-    msg_enc = Werld.Proto.MessageToClient.encode(msg)
+    msg = %MessageToClient{msg: {:chunk, chunk}}
+    msg_enc = MessageToClient.encode(msg)
     {:reply, {:binary, msg_enc}, req, state}
   end
 
