@@ -4,7 +4,7 @@ block_type_aliases = {
 }
 
 tests = {
-  fallow = {
+  test_fallow = {
     start = [[
       ---
       ---
@@ -14,7 +14,7 @@ tests = {
     after_2 = "unchanged"
   },
 
-  underpopulation = {
+  test_underpopulation = {
     start = [[
       ---
       -O-
@@ -24,7 +24,7 @@ tests = {
     after_2 = "unchanged"
   },
 
-  overpopulation = {
+  test_overpopulation = {
     start = [[
       OOO
       OOO
@@ -42,7 +42,7 @@ tests = {
     ]]
   },
 
-  two_by_two = {
+  test_two_by_two = {
     start = [[
       00-
       00-
@@ -52,7 +52,7 @@ tests = {
     after_2 = "unchanged"
   },
 
-  blinker = {
+  test_blinker = {
     start = [[
       ---
       OOO

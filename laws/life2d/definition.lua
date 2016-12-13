@@ -1,6 +1,15 @@
 definition = {
   block_types = {
-    "dead",
-    "alive"
+    dead = {
+      client_hints = {
+        color = "#000"
+      }
+    },
+
+    alive = {
+      client_hints = {
+        color = "#00f"
+      }
+    }
   }
 }
