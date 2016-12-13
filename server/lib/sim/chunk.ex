@@ -12,21 +12,20 @@ defmodule Werld.Sim.Chunk do
   @chunk_size 16
 
   defp initial_state do
-    block_types = :array.new([
-      size: @chunk_size*@chunk_size,
-      default: 0,
-      fixed: true
-    ])
-    block_types = :array.set(3, 1, block_types)
-    block_types = :array.set(4, 1, block_types)
-    block_types = :array.set(9, 1, block_types)
+    block_types = List.duplicate(0, @chunk_size*@chunk_size)
+    block_types = List.replace_at(block_types, 3, 1)
+    block_types = List.replace_at(block_types, 4, 1)
+    block_types = List.replace_at(block_types, 9, 1)
+    block_types = List.replace_at(block_types, 29, 1)
 
-    %Werld.Sim.Chunk.State{
+    %State{
       block_types: block_types
     }
   end
 
   defp to_chunk_proto(state) do
+    alias Werld.Proto.Chunk.BlockRun
+
     Werld.Proto.Chunk.new(
       pos: Werld.Proto.Coord.new(
         instance: 0,
@@ -35,26 +34,19 @@ defmodule Werld.Sim.Chunk do
         y: 0
       ),
       ver: 50,
-      block_runs: block_types_array_to_runs(state.block_types)
+      block_runs: Enum.map(calc_runs(state.block_types), fn({n, bt}) ->
+        BlockRun.new(count: n, block_type: bt)
+      end)
     )
   end
 
-  defp block_types_array_to_runs(arr, idx \\ 0) do
-    if idx > :array.size(arr) do
-      []
-    else
-      cur = :array.get(idx, arr)
-      case block_types_array_to_runs(arr, idx+1) do
-        [] ->
-          [Werld.Proto.Chunk.BlockRun.new(count: 1, block_type: cur)]
-        [next_run | rest] ->
-          if next_run.block_type == cur do
-            [Werld.Proto.Chunk.BlockRun.new(count: next_run.count+1, block_type: cur) | rest]
-          else
-            [Werld.Proto.Chunk.BlockRun.new(count: 1, block_type: cur) | [ next_run | rest ]]
-          end
+  defp calc_runs(block_types) do
+    List.foldr(block_types, [], fn(cur_bt, acc) ->
+      case acc do
+        [{n, ^cur_bt} | rest] -> [{n+1, cur_bt} | rest]
+        others -> [{1, cur_bt} | others]
       end
-    end
+    end)
   end
 
   ####
