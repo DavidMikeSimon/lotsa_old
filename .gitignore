@@ -4,6 +4,7 @@
 /vbin
 /webtest/public
 /webtest/node_modules
+/server/build_time
 erl_crash.dump
 *.ez
 .settings

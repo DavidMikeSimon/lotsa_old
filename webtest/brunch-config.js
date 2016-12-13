@@ -1,5 +1,5 @@
 exports.paths = {
-  watched: ['app', 'test', 'vendor', '../proto']
+  watched: ['app', 'test', 'vendor', '../proto', 'server.build_time']
 }
 
 exports.files = {

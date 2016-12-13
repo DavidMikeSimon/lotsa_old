@@ -13,7 +13,7 @@ defmodule Werld.Mixfile do
   def application do
     [
       applications: [
-        :logger, :cowboy, :exprotobuf, :gproc, :runtime_tools, :remix
+        :logger, :cowboy, :exprotobuf, :gproc, :runtime_tools
       ],
       mod: {Werld.App, []}
     ]
@@ -23,8 +23,7 @@ defmodule Werld.Mixfile do
     [
       {:cowboy, "~> 1.0.0"},
       {:exprotobuf, "~> 1.2.0"},
-      {:gproc, "0.6.1"},
-      {:remix, "~> 0.0.1", only: :dev}
+      {:gproc, "0.6.1"}
     ]
   end
 end

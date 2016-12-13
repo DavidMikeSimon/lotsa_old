@@ -10,8 +10,8 @@ Vagrant.configure(2) do |config|
 
   # Watch out for mix.lock, you need to manually copy it back if mix on guest updates it
   config.vm.synced_folder ".", "/vagrant", type: "rsync", rsync__exclude: [
-    ".git/", ".vagrant/", "*.swp", "*.swo",
-    "server/_build/", "server/deps/",
+    ".git/", ".vagrant/", "*.swp", "*.swo", "*.build_time",
+    "server/_build/", "server/deps/", "server/build_time",
     "webtest/node_modules/", "webtest/public/"
   ]
   config.ssh.port = 22

@@ -4,7 +4,6 @@ var $ = require("jquery");
 var _ = require("lodash");
 var ProtoBuf = require("protobufjs");
 var SVG = require("svg.js");
-var ReconnectingWebSocket = require("reconnecting-websocket");
 
 var GRID_CELLS = 16;
 var GRID_CELL_SIZE = 32;
@@ -39,12 +38,7 @@ var Application = {
 		var me = this;
 		me.log("Starting...");
 
-		var wsPath = "ws://" + window.location.hostname + ":3000/websocket"
-		var ws = new ReconnectingWebSocket(wsPath, [], {
-			maxReconnectionDelay: 5000,
-			minReconnectionDelay: 250,
-			connectionTimeout: 500
-		});
+		var ws = new WebSocket("ws://" + window.location.hostname + ":3000/websocket")
 
 		ws.onopen = function (event) {
 			me.log("Connected");
