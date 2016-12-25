@@ -1,32 +1,66 @@
 defmodule Werld.Sim.Chunk do
   use GenServer
 
-  ####
-  ## Internals
-  ####
-
   defmodule State do
-    defstruct [:block_types]
+    defstruct [
+      :simulator,
+      :block_types
+    ]
   end
 
   @chunk_size 16
 
-  defp initial_state do
-    block_types = List.duplicate(1, @chunk_size*@chunk_size)
-    block_types = List.replace_at(block_types, 3, 2)
-    block_types = List.replace_at(block_types, 4, 2)
-    block_types = List.replace_at(block_types, 9, 2)
-    block_types = List.replace_at(block_types, 29, 2)
+  ####
+  ## Client API
+  ####
 
-    %State{
-      block_types: block_types
-    }
+  def start_link(pos, simulator) do
+    GenServer.start_link(__MODULE__, {pos, simulator}, [])
   end
+
+  def get_chunk_proto(server) do
+    GenServer.call(server, :get_chunk_proto)
+  end
+
+  def step(server) do
+    GenServer.cast(server, :step)
+  end
+
+  ####
+  ## Server Callbacks
+  ####
+
+  def init({pos, simulator}) do
+    reg_pos = Tuple.insert_at(pos, 0, :chunk)
+    :gproc.reg({:n, :l, reg_pos})
+
+    {:ok, %State{
+      simulator: simulator,
+      block_types: List.duplicate(1, @chunk_size*@chunk_size)
+    }}
+  end
+
+  def handle_call(:get_chunk_proto, _from, state) do
+    {:reply, to_chunk_proto(state), state}
+  end
+
+  def handle_cast(:step, state) do
+    # Do a thing!
+    {:noreply, state}
+  end
+
+  def handle_info(_msg, state) do
+    {:noreply, state}
+  end
+
+  ####
+  ## Internals
+  ####
 
   defp to_chunk_proto(state) do
     %Werld.Proto.Chunk{
       pos: %Werld.Proto.Coord{
-        instance: 0,
+        universe: 0,
         grid: 0,
         x: 0,
         y: 0
@@ -48,38 +82,4 @@ defmodule Werld.Sim.Chunk do
       end
     end)
   end
-
-  ####
-  ## Client API
-  ####
-  
-  def start_link do
-    GenServer.start_link(__MODULE__, :ok, [])
-  end
-
-  def get_chunk_proto(server) do
-    GenServer.call(server, :get_chunk_proto)
-  end
-
-  ####
-  ## Server Callbacks
-  ####
-
-  def init(:ok) do
-    :gproc.reg({:n, :l, {:chunk, 0, 0, 0, 0}})
-    {:ok, initial_state}
-  end
-
-  def handle_call(:get_chunk_proto, _from, state) do
-    {:reply, to_chunk_proto(state), state}
-  end
-
-  def handle_cast(_msg, state) do
-    {:noreply, state}
-  end
-
-  def handle_info(_msg, state) do
-    {:noreply, state}
-  end
-
 end

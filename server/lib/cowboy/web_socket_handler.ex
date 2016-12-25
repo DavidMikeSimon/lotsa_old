@@ -44,7 +44,7 @@ defmodule Werld.Cowboy.WebSocketHandler do
 
   defp get_chunk(coord) do
     chunk_server = :gproc.lookup_pid({:n, :l, {
-      :chunk, coord.instance, coord.grid, coord.x, coord.y
+      :chunk, coord.universe, coord.grid, coord.x, coord.y
     }})
     Werld.Sim.Chunk.get_chunk_proto(chunk_server)
   end

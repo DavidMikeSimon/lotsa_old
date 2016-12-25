@@ -5,7 +5,7 @@ package WerldProto;
 ///////////////////
 
 message Coord {
-    required sint32 instance = 1;
+    required sint32 universe = 1;
     required sint32 grid = 2;
     required sint32 x = 3;
     required sint32 y = 4;

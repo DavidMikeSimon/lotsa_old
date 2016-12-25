@@ -1,5 +1,5 @@
 block_type_aliases = {
-  dead = "-"
+  dead = "-",
   alive = "O"
 }
 

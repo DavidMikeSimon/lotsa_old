@@ -29,7 +29,7 @@ var Application = {
             var rect = me.gridSvg
               .rect(GRID_CELL_SIZE, GRID_CELL_SIZE)
               .move(j*(GRID_CELL_SIZE+GRID_CELL_GAP), i*(GRID_CELL_SIZE+GRID_CELL_GAP))
-              .fill('#000');
+              .fill(BLOCK_TYPE_COLORS[0]);
             gridRow.push(rect);
           }
           me.gridCells.push(gridRow);
@@ -51,7 +51,7 @@ var Application = {
       var msg = WerldProto.MessageToServer.encode({
         chunk_request: {
           coords: [
-            { instance: 0, grid: 0, x: 0, y: 0 }
+            { universe: 0, grid: 0, x: 0, y: 0 }
           ]
         }
       });

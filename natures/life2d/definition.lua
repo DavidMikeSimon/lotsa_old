@@ -1,3 +1,5 @@
+werld_version = "0"
+
 definition = {
   block_types = {
     dead = {

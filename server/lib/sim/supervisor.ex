@@ -7,7 +7,7 @@ defmodule Werld.Sim.Supervisor do
 
   def init(:ok) do
     children = [
-      worker(Werld.Sim.Chunk, [])
+      worker(Werld.Sim.Chunk, [{0,0,0,0}, 3])
     ]
 
     supervise(children, strategy: :one_for_one)
