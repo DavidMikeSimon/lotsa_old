@@ -1,8 +1,19 @@
-werld_version = "1"
+-- TODO Separate natures into a public API (defined as a flat table with access to convenience
+-- DSL callbacks) and a private implementation (defined as functions). When one nature
+-- depends upon or extends another, then that should continue to basically work as long as
+-- nothing is changed in the dependee's public API. When extending another nature, you
+-- write a function which accepts its API table and returns an altered version.
+
+-- TODO When overriding methods in another nature, use an alias_method_chain approach to
+-- allow access to un-overridden method from elsewhere.
+
+nature_protocol = "1"
 
 definition = {
+  version = "0.0.1",
+
   dependencies = {
-    base = "1"
+    werld_base = "*"
   },
 
   properties = {
@@ -18,7 +29,7 @@ definition = {
   },
 
   block_type_amendments = {
-    base = {
+    werld_base = {
       empty = { properties = { is_life_spawnable = true } }
     }
   },
