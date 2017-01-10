@@ -1,6 +1,6 @@
 block_type_aliases = {
-  dead = "-",
-  alive = "O"
+  empty = "-",
+  life = "O"
 }
 
 tests = {
