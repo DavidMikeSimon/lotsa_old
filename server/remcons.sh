@@ -7,9 +7,9 @@ set -e
 trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
 
 echo "Generating SSH config..."
-vagrant ssh-config > /tmp/vssh-config-werld
+vagrant ssh-config > /tmp/vssh-config-chunkosm
 echo "Connecting to Vagrant SSH server..."
-ssh -fN -L 4369:localhost:4369 -L 9001:localhost:9001 -F /tmp/vssh-config-werld werld
+ssh -fN -L 4369:localhost:4369 -L 9001:localhost:9001 -F /tmp/vssh-config-chunkosm chunkosm
 sleep 2
 echo "Starting iex..."
-iex --name console@127.0.0.1 --cookie werld -e 'IO.inspect(:net_adm.ping(:"werld@127.0.0.1"))'
+iex --name console@127.0.0.1 --cookie chunkosm -e 'IO.inspect(:net_adm.ping(:"chunkosm@127.0.0.1"))'

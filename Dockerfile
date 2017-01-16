@@ -24,6 +24,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y nodejs
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y ruby2.3
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y ruby2.3-dev
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y rsync
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y git
 
 RUN gem install rb-inotify rerun
 
@@ -79,21 +80,21 @@ RUN chown -R vagrant:vagrant /vagrant
 
 # Set up runit services for server and webtest
 
-RUN mkdir -p /etc/service/werld-server/supervise
-RUN echo "#!/bin/sh" > /etc/service/werld-server/run
-RUN echo "set -e" >> /etc/service/werld-server/run
-RUN echo "test -e /vagrant/server/lib || exit 1" >> /etc/service/werld-server/run
-RUN echo "su vagrant -c \"cd /vagrant/server && rerun -b -d 'lib,test,../proto' -p '**/*.{ex,exs,proto}' -s KILL --name werld -- ./run.sh 2>&1 | logger -i -t werld-server\"" >> /etc/service/werld-server/run
-RUN chmod a+x /etc/service/werld-server/run
-RUN chown -R root:root /etc/service/werld-server
+RUN mkdir -p /etc/service/chunkosm-server/supervise
+RUN echo "#!/bin/sh" > /etc/service/chunkosm-server/run
+RUN echo "set -e" >> /etc/service/chunkosm-server/run
+RUN echo "test -e /vagrant/server/lib || exit 1" >> /etc/service/chunkosm-server/run
+RUN echo "su vagrant -c \"cd /vagrant/server && rerun -b -d 'lib,test,../proto' -p '**/*.{ex,exs,proto}' -s KILL --name chunkosm -- ./run.sh 2>&1 | logger -i -t chunkosm-server\"" >> /etc/service/chunkosm-server/run
+RUN chmod a+x /etc/service/chunkosm-server/run
+RUN chown -R root:root /etc/service/chunkosm-server
 
-RUN mkdir -p /etc/service/werld-webtest/supervise
-RUN echo "#!/bin/sh" > /etc/service/werld-webtest/run
-RUN echo "test -e /vagrant/webtest/app || exit 1" >> /etc/service/werld-webtest/run
-RUN echo "su vagrant -c \"cd /vagrant/webtest && ./node_modules/brunch/bin/brunch watch --server 2>&1 | logger -i -t werld-webtest\"" >> /etc/service/werld-webtest/run
-RUN echo "set -e" >> /etc/service/werld-webtest/run
-RUN chmod a+x /etc/service/werld-webtest/run
-RUN chown -R root:root /etc/service/werld-webtest
+RUN mkdir -p /etc/service/chunkosm-webtest/supervise
+RUN echo "#!/bin/sh" > /etc/service/chunkosm-webtest/run
+RUN echo "test -e /vagrant/webtest/app || exit 1" >> /etc/service/chunkosm-webtest/run
+RUN echo "su vagrant -c \"cd /vagrant/webtest && ./node_modules/brunch/bin/brunch watch --server 2>&1 | logger -i -t chunkosm-webtest\"" >> /etc/service/chunkosm-webtest/run
+RUN echo "set -e" >> /etc/service/chunkosm-webtest/run
+RUN chmod a+x /etc/service/chunkosm-webtest/run
+RUN chown -R root:root /etc/service/chunkosm-webtest
 
 # phusion/baseimage init
 

@@ -1,19 +1,19 @@
--- TODO Separate natures into a public API (defined as a flat table with access to convenience
--- DSL callbacks) and a private implementation (defined as functions). When one nature
+-- TODO Separate plugins into a public API (defined as a flat table with access to convenience
+-- DSL callbacks) and a private implementation (defined as functions). When one plugin
 -- depends upon or extends another, then that should continue to basically work as long as
--- nothing is changed in the dependee's public API. When extending another nature, you
+-- nothing is changed in the dependee's public API. When extending another plugin, you
 -- write a function which accepts its API table and returns an altered version.
 
--- TODO When overriding methods in another nature, use an alias_method_chain approach to
+-- TODO When overriding methods in another plugin, use an alias_method_chain approach to
 -- allow access to un-overridden method from elsewhere.
 
-nature_protocol = "1"
+plugin_protocol = "1"
 
 definition = {
   version = "0.0.1",
 
   dependencies = {
-    werld_base = "*"
+    basis = "*"
   },
 
   properties = {
@@ -29,7 +29,7 @@ definition = {
   },
 
   block_type_amendments = {
-    werld_base = {
+    basis = {
       empty = { properties = { is_life_spawnable = true } }
     }
   },

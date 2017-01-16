@@ -1,4 +1,4 @@
-defmodule Werld.Sim.Chunk do
+defmodule Chunkosm.Sim.Chunk do
   use GenServer
 
   defmodule State do
@@ -58,8 +58,8 @@ defmodule Werld.Sim.Chunk do
   ####
 
   defp to_chunk_proto(state) do
-    %Werld.Proto.Chunk{
-      pos: %Werld.Proto.Coord{
+    %Chunkosm.Proto.Chunk{
+      pos: %Chunkosm.Proto.Coord{
         universe: 0,
         grid: 0,
         x: 0,
@@ -71,7 +71,7 @@ defmodule Werld.Sim.Chunk do
   end
 
   defp calc_runs(block_types) do
-    alias Werld.Proto.Chunk.BlockRun
+    alias Chunkosm.Proto.Chunk.BlockRun
 
     List.foldr(block_types, [], fn(cur_bt, acc) ->
       case acc do

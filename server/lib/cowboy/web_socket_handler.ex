@@ -1,8 +1,8 @@
-defmodule Werld.Cowboy.WebSocketHandler do
+defmodule Chunkosm.Cowboy.WebSocketHandler do
   @behaviour :cowboy_websocket_handler
 
-  alias Werld.Proto.MessageToServer
-  alias Werld.Proto.MessageToClient
+  alias Chunkosm.Proto.MessageToServer
+  alias Chunkosm.Proto.MessageToClient
 
   def init({:tcp, :http}, _req, _opts) do
     {:upgrade, :protocol, :cowboy_websocket}
@@ -46,6 +46,6 @@ defmodule Werld.Cowboy.WebSocketHandler do
     chunk_server = :gproc.lookup_pid({:n, :l, {
       :chunk, coord.universe, coord.grid, coord.x, coord.y
     }})
-    Werld.Sim.Chunk.get_chunk_proto(chunk_server)
+    Chunkosm.Sim.Chunk.get_chunk_proto(chunk_server)
   end
 end

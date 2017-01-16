@@ -1,9 +1,9 @@
-defmodule Werld.Mixfile do
+defmodule Chunkosm.Mixfile do
   use Mix.Project
 
   def project do
     [
-      app: :werld,
+      app: :chunkosm,
       version: "0.0.1",
       elixir: "~> 1.0",
       deps: deps
@@ -15,7 +15,7 @@ defmodule Werld.Mixfile do
       applications: [
         :logger, :cowboy, :exprotobuf, :gproc, :runtime_tools
       ],
-      mod: {Werld.App, []}
+      mod: {Chunkosm.App, []}
     ]
   end
 

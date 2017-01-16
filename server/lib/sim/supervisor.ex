@@ -1,4 +1,4 @@
-defmodule Werld.Sim.Supervisor do
+defmodule Chunkosm.Sim.Supervisor do
   use Supervisor
 
   def start_link do
@@ -7,7 +7,7 @@ defmodule Werld.Sim.Supervisor do
 
   def init(:ok) do
     children = [
-      worker(Werld.Sim.Chunk, [{0,0,0,0}, 3])
+      worker(Chunkosm.Sim.Chunk, [{0,0,0,0}, 3])
     ]
 
     supervise(children, strategy: :one_for_one)

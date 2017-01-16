@@ -1,1 +1,1 @@
-iex --sname console@localhost --remsh werld@localhost --cookie werld
+iex --sname console@localhost --remsh chunkosm@localhost --cookie chunkosm

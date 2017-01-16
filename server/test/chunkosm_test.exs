@@ -1,4 +1,4 @@
-defmodule WerldTest do
+defmodule ChunkosmTest do
   use ExUnit.Case
 
   test "the truth" do

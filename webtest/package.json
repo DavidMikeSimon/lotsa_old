@@ -1,8 +1,8 @@
 {
-  "name": "werld-webtest",
-  "description": "Simple test client for Werld",
+  "name": "chunkosm-webtest",
+  "description": "Simple test client for Chunkosm",
   "author": "David Simon",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "dependencies": {
     "brunch": "^2.0.0",
     "javascript-brunch": "^2.0.0",

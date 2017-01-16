@@ -1,7 +1,7 @@
-Werld
-=====
+Chunkosm
+========
 
-Experiment in Elixir with websockets and protobuf.
+Voxel world backend.
 
 ## Starting development
 
