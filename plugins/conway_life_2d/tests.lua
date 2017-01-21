@@ -1,72 +1,74 @@
-block_type_aliases = {
-  empty = "-",
-  life = "O"
-}
-
-tests = {
-  test_fallow = {
-    start = [[
-      ---
-      ---
-      ---
-    ]],
-    after_1 = "unchanged",
-    after_2 = "unchanged"
+return {
+  block_type_aliases = {
+    empty = "-",
+    life = "O"
   },
 
-  test_underpopulation = {
-    start = [[
-      ---
-      -O-
-      ---
-    ]],
-    after_1 = "unchanged",
-    after_2 = "unchanged"
-  },
+  tests = {
+    test_fallow = {
+      start = [[
+        ---
+        ---
+        ---
+      ]],
+      after_1 = "unchanged",
+      after_2 = "unchanged"
+    },
 
-  test_overpopulation = {
-    start = [[
-      OOO
-      OOO
-      OOO
-    ]],
-    after_1 = [[
-      O-O
-      ---
-      O-O
-    ]],
-    after_2 = [[
-      ---
-      ---
-      ---
-    ]]
-  },
+    test_underpopulation = {
+      start = [[
+        ---
+        -O-
+        ---
+      ]],
+      after_1 = "unchanged",
+      after_2 = "unchanged"
+    },
 
-  test_two_by_two = {
-    start = [[
-      00-
-      00-
-      ---
-    ]],
-    after_1 = "unchanged",
-    after_2 = "unchanged"
-  },
+    test_overpopulation = {
+      start = [[
+        OOO
+        OOO
+        OOO
+      ]],
+      after_1 = [[
+        O-O
+        ---
+        O-O
+      ]],
+      after_2 = [[
+        ---
+        ---
+        ---
+      ]]
+    },
 
-  test_blinker = {
-    start = [[
-      ---
-      OOO
-      ---
-    ]],
-    after_1 = [[
-      -O-
-      -O-
-      -O-
-    ]],
-    after_2 = [[
-      ---
-      OOO
-      ---
-    ]]
+    test_two_by_two = {
+      start = [[
+        00-
+        00-
+        ---
+      ]],
+      after_1 = "unchanged",
+      after_2 = "unchanged"
+    },
+
+    test_blinker = {
+      start = [[
+        ---
+        OOO
+        ---
+      ]],
+      after_1 = [[
+        -O-
+        -O-
+        -O-
+      ]],
+      after_2 = [[
+        ---
+        OOO
+        ---
+      ]]
+    }
   }
 }

@@ -7,7 +7,7 @@ defmodule Chunkosm.Sim.Supervisor do
 
   def init(:ok) do
     children = [
-      worker(Chunkosm.Sim.Chunk, [{0,0,0,0}, 3])
+      worker(Chunkosm.Sim.Simulator, [{}])
     ]
 
     supervise(children, strategy: :one_for_one)

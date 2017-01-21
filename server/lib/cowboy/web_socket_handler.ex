@@ -43,9 +43,7 @@ defmodule Chunkosm.Cowboy.WebSocketHandler do
   end
 
   defp get_chunk(coord) do
-    chunk_server = :gproc.lookup_pid({:n, :l, {
-      :chunk, coord.universe, coord.grid, coord.x, coord.y
-    }})
-    Chunkosm.Sim.Chunk.get_chunk_proto(chunk_server)
+    chunk_server = :gproc.lookup_pid({:n, :l, :simulator}) # FIXME temporary name
+    Chunkosm.Sim.Simulator.get_chunk_proto(chunk_server, coord)
   end
 end

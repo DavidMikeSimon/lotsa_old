@@ -23,6 +23,6 @@ Vagrant.configure(2) do |config|
   config.gatling.rsync_on_startup = false
 
   config.exec.binstubs_path = 'vbin'
-  config.exec.commands './run.sh', env: { LC_ALL: 'en_US.UTF-8' }
   config.exec.commands 'npm', directory: '/vagrant/webtest'
+  config.exec.commands 'mix', directory: '/vagrant/server', env: { LC_ALL: 'en_US.UTF-8' }
 end
