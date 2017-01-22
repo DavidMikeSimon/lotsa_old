@@ -1,4 +1,4 @@
-defmodule Chunkosm.Sim.Simulator do
+defmodule Chunkosm.Simulator do
   use GenServer
 
   defmodule State do
@@ -11,6 +11,10 @@ defmodule Chunkosm.Sim.Simulator do
   ####
   ## Client API
   ####
+  
+  def start(universe) do
+    GenServer.start(__MODULE__, {universe}, [])
+  end
 
   def start_link(universe) do
     GenServer.start_link(__MODULE__, {universe}, [])

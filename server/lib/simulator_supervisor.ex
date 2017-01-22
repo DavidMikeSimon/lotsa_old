@@ -1,4 +1,4 @@
-defmodule Chunkosm.Sim.Supervisor do
+defmodule Chunkosm.SimulatorSupervisor do
   use Supervisor
 
   def start_link do
@@ -7,7 +7,7 @@ defmodule Chunkosm.Sim.Supervisor do
 
   def init(:ok) do
     children = [
-      worker(Chunkosm.Sim.Simulator, [{}])
+      worker(Chunkosm.Simulator, [{}])
     ]
 
     supervise(children, strategy: :one_for_one)
