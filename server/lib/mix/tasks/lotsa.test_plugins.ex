@@ -21,7 +21,7 @@ defmodule Mix.Tasks.Lotsa.TestPlugins do
         tests_def = Lua.eval_file!(Lua.State.new(), test_path)
           |> hd
           |> Lotsa.LuaHelpers.elixirify
-        Enum.each Map.to_list(tests_def["tests"]), fn {name, test} ->
+        Enum.each tests_def["tests"], fn {name, test} ->
           run_test(universe, tests_def, "#{plugin}::#{name}", test)
         end
       else
@@ -31,7 +31,7 @@ defmodule Mix.Tasks.Lotsa.TestPlugins do
   end
 
   defp setup_test_universe(plugin) do
-    Lotsa.Universe.new(0, %{plugins: [plugin]})
+    Lotsa.Universe.new(0) |> Lotsa.Universe.add_plugin(plugin)
   end
 
   defp run_test(universe, tests_def, test_name, test) do
