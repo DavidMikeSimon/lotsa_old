@@ -80,21 +80,21 @@ RUN chown -R vagrant:vagrant /vagrant
 
 # Set up runit services for server and webtest
 
-RUN mkdir -p /etc/service/chunkosm-server/supervise
-RUN echo "#!/bin/sh" > /etc/service/chunkosm-server/run
-RUN echo "set -e" >> /etc/service/chunkosm-server/run
-RUN echo "test -e /vagrant/server/lib || exit 1" >> /etc/service/chunkosm-server/run
-RUN echo "su vagrant -c \"cd /vagrant/server && rerun -b -d 'lib,test,../proto' -p '**/*.{ex,exs,proto}' -s KILL --name chunkosm -- ./run.sh 2>&1 | logger -i -t chunkosm-server\"" >> /etc/service/chunkosm-server/run
-RUN chmod a+x /etc/service/chunkosm-server/run
-RUN chown -R root:root /etc/service/chunkosm-server
+RUN mkdir -p /etc/service/lotsa-server/supervise
+RUN echo "#!/bin/sh" > /etc/service/lotsa-server/run
+RUN echo "set -e" >> /etc/service/lotsa-server/run
+RUN echo "test -e /vagrant/server/lib || exit 1" >> /etc/service/lotsa-server/run
+RUN echo "su vagrant -c \"cd /vagrant/server && rerun -b -d 'lib,test,../proto' -p '**/*.{ex,exs,proto}' -s KILL --name lotsa -- ./run.sh 2>&1 | logger -i -t lotsa-server\"" >> /etc/service/lotsa-server/run
+RUN chmod a+x /etc/service/lotsa-server/run
+RUN chown -R root:root /etc/service/lotsa-server
 
-RUN mkdir -p /etc/service/chunkosm-webtest/supervise
-RUN echo "#!/bin/sh" > /etc/service/chunkosm-webtest/run
-RUN echo "test -e /vagrant/webtest/app || exit 1" >> /etc/service/chunkosm-webtest/run
-RUN echo "su vagrant -c \"cd /vagrant/webtest && ./node_modules/brunch/bin/brunch watch --server 2>&1 | logger -i -t chunkosm-webtest\"" >> /etc/service/chunkosm-webtest/run
-RUN echo "set -e" >> /etc/service/chunkosm-webtest/run
-RUN chmod a+x /etc/service/chunkosm-webtest/run
-RUN chown -R root:root /etc/service/chunkosm-webtest
+RUN mkdir -p /etc/service/lotsa-webtest/supervise
+RUN echo "#!/bin/sh" > /etc/service/lotsa-webtest/run
+RUN echo "test -e /vagrant/webtest/app || exit 1" >> /etc/service/lotsa-webtest/run
+RUN echo "su vagrant -c \"cd /vagrant/webtest && ./node_modules/brunch/bin/brunch watch --server 2>&1 | logger -i -t lotsa-webtest\"" >> /etc/service/lotsa-webtest/run
+RUN echo "set -e" >> /etc/service/lotsa-webtest/run
+RUN chmod a+x /etc/service/lotsa-webtest/run
+RUN chown -R root:root /etc/service/lotsa-webtest
 
 # phusion/baseimage init
 

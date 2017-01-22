@@ -1,8 +1,8 @@
-defmodule Chunkosm.Cowboy.WebSocketHandler do
+defmodule Lotsa.Cowboy.WebSocketHandler do
   @behaviour :cowboy_websocket_handler
 
-  alias Chunkosm.Proto.MessageToServer
-  alias Chunkosm.Proto.MessageToClient
+  alias Lotsa.Proto.MessageToServer
+  alias Lotsa.Proto.MessageToClient
 
   def init({:tcp, :http}, _req, _opts) do
     {:upgrade, :protocol, :cowboy_websocket}
@@ -44,6 +44,6 @@ defmodule Chunkosm.Cowboy.WebSocketHandler do
 
   defp get_chunk(coord) do
     chunk_server = :gproc.lookup_pid({:n, :l, :simulator}) # FIXME temporary name
-    Chunkosm.Simulator.get_chunk_proto(chunk_server, coord)
+    Lotsa.Simulator.get_chunk_proto(chunk_server, coord)
   end
 end

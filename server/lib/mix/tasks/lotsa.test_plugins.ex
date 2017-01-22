@@ -1,9 +1,11 @@
-defmodule Mix.Tasks.Chunkosm.TestPlugins do
+defmodule Mix.Tasks.Lotsa.TestPlugins do
   use Mix.Task
 
-  @shortdoc "Runs Lua tests for Chunkosm plugins"
+  @shortdoc "Runs Lua tests for Lotsa plugins"
 
   def run(args) do
+    :gproc.start_link()
+
     path_parts = [Mix.Project.build_path, "..", "..", "..", "plugins"]
     plugins_dir = Path.expand Path.join(path_parts)
     target_plugins = case args do
@@ -18,7 +20,7 @@ defmodule Mix.Tasks.Chunkosm.TestPlugins do
         universe = setup_test_universe(plugin)
         tests_def = Lua.eval_file!(Lua.State.new(), test_path)
           |> hd
-          |> Chunkosm.LuaHelpers.elixirify
+          |> Lotsa.LuaHelpers.elixirify
         Enum.each Map.to_list(tests_def["tests"]), fn {name, test} ->
           run_test(universe, tests_def, "#{plugin}::#{name}", test)
         end
@@ -29,15 +31,31 @@ defmodule Mix.Tasks.Chunkosm.TestPlugins do
   end
 
   defp setup_test_universe(plugin) do
-    Chunkosm.Universe.new(0, %{plugins: [plugin]})
+    Lotsa.Universe.new(0, %{plugins: [plugin]})
   end
 
   defp run_test(universe, tests_def, test_name, test) do
-    sim = Chunkosm.Simulator.start(universe)
+    initial_chunk = Lotsa.Chunk.new(
+      {0,0,0,0},
+      string_to_block_types(tests_def, test, "start")
+    )
+    {:ok, sim} = Lotsa.Simulator.start(universe, %{chunks: [initial_chunk]})
     try do
-      IO.inspect(test_name)
+      IO.inspect(Lotsa.Simulator.get_chunk_proto(sim, {0,0,0,0}))
     after
-      Chunkosm.Simulator.stop(sim)
+      Lotsa.Simulator.stop(sim)
+    end
+  end
+
+  def string_to_block_types(tests_def, test, state_name) do
+    str = test[state_name]
+    Enum.map String.split(str), fn(line) ->
+      Enum.map String.codepoints(line), fn(char) ->
+        case char do
+          "-" -> 1
+          "S" -> 2
+        end
+      end
     end
   end
 end

@@ -1,1 +1,1 @@
-iex --sname console@localhost --remsh chunkosm@localhost --cookie chunkosm
+iex --sname console@localhost --remsh lotsa@localhost --cookie lotsa

@@ -1,11 +1,11 @@
-defmodule Chunkosm.Universe do
+defmodule Lotsa.Universe do
   defstruct [
     :num,
     :plugins
   ]
 
   def new(universe_num, config) do
-    %Chunkosm.Universe{
+    %Lotsa.Universe{
       num: universe_num,
       plugins: Map.get(config, :plugins)
     }

@@ -1,9 +1,9 @@
-defmodule Chunkosm.Mixfile do
+defmodule Lotsa.Mixfile do
   use Mix.Project
 
   def project do
     [
-      app: :chunkosm,
+      app: :lotsa,
       version: "0.0.1",
       elixir: "~> 1.0",
       deps: deps
@@ -15,7 +15,7 @@ defmodule Chunkosm.Mixfile do
       applications: [
         :logger, :cowboy, :exprotobuf, :gproc, :runtime_tools
       ],
-      mod: {Chunkosm.App, []}
+      mod: {Lotsa.App, []}
     ]
   end
 

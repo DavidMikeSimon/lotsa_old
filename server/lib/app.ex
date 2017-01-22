@@ -1,13 +1,13 @@
-defmodule Chunkosm.App do
+defmodule Lotsa.App do
   use Application
 
   def start(_type, _args) do
-    Chunkosm.SimulatorSupervisor.start_link()
+    Lotsa.SimulatorSupervisor.start_link()
 
     {:ok, _} = :cowboy.start_http(:http, 100, [port: 3000], [env: [
       dispatch: :cowboy_router.compile([
         {:_, [
-          {"/websocket", Chunkosm.Cowboy.WebSocketHandler, []}
+          {"/websocket", Lotsa.Cowboy.WebSocketHandler, []}
         ]}
       ])
     ]])

@@ -1,8 +1,5 @@
-defmodule Chunkosm.LuaHelpers do
-  def elixirify([]) do
-    []
-  end
-
+defmodule Lotsa.LuaHelpers do
+  def elixirify([]), do: []
   def elixirify(term) when is_list(term) do
     if is_tuple(hd(term)) do
       Map.new(term, fn({k, v}) -> {k, elixirify(v) } end)
@@ -10,8 +7,5 @@ defmodule Chunkosm.LuaHelpers do
       Enum.map(term, &elixirify/1)
     end
   end
-
-  def elixirify(term) do
-    term
-  end
+  def elixirify(term), do: term
 end

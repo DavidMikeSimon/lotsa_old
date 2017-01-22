@@ -1,4 +1,4 @@
-defmodule Chunkosm.Simulator do
+defmodule Lotsa.Simulator do
   use GenServer
 
   defmodule State do
@@ -12,12 +12,12 @@ defmodule Chunkosm.Simulator do
   ## Client API
   ####
   
-  def start(universe) do
-    GenServer.start(__MODULE__, {universe}, [])
+  def start(universe, options \\ %{}) do
+    GenServer.start(__MODULE__, {universe, options}, [])
   end
 
-  def start_link(universe) do
-    GenServer.start_link(__MODULE__, {universe}, [])
+  def start_link(universe, options \\ %{}) do
+    GenServer.start_link(__MODULE__, {universe, options}, [])
   end
 
   def get_chunk_proto(simulator, coord) do
@@ -36,18 +36,23 @@ defmodule Chunkosm.Simulator do
   ## Server Callbacks
   ####
 
-  def init(universe) do
+  def init({universe, options}) do
+    :gproc.reg({:n, :l, :simulator}) # FIXME temporary
+    chunks = if Map.has_key?(options, :chunks) do
+      Map.new options.chunks, fn chunk -> {chunk.coord, chunk} end
+    else
+      %{}
+    end
     {:ok, %State{
       universe: universe,
-      loaded_chunks: %{}
+      loaded_chunks: chunks
     }}
-    :gproc.reg({:n, :l, :simulator}) # FIXME temporary
   end
 
   def handle_call({:get_chunk_proto, coord}, _from, state) do
     case Map.get(state.loaded_chunks, coord) do
-      nil -> {:reply, :chunk_not_found, state}
-      chunk -> {:reply, {:ok, Chunkosm.Chunk.to_proto(chunk)}, state}
+      nil -> {:reply, {:error, :chunk_not_found}, state}
+      chunk -> {:reply, {:ok, Lotsa.Chunk.to_proto(chunk)}, state}
     end
   end
 

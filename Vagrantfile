@@ -1,10 +1,10 @@
 Vagrant.configure(2) do |config|
-  config.vm.define "chunkosm"
-  config.vm.hostname = "chunkosm"
+  config.vm.define "lotsa"
+  config.vm.hostname = "lotsa"
   config.vm.provider "docker" do |d|
     d.build_dir = "."
     d.has_ssh = true
-    d.name = "chunkosm"
+    d.name = "lotsa"
     d.remains_running = true
   end
 

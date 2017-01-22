@@ -18,7 +18,7 @@ var Application = {
   init: function init() {
     var me = this;
     $(document).ready(function() {
-      ProtoBuf.loadProtoFile("proto/chunkosm.proto", function (err, builder) {
+      ProtoBuf.loadProtoFile("proto/lotsa.proto", function (err, builder) {
         if (err) { throw err; }
         var sideLen = GRID_CELLS*(GRID_CELL_SIZE + GRID_CELL_GAP);
         me.gridSvg = SVG('grid').size(sideLen, sideLen);
@@ -34,12 +34,12 @@ var Application = {
           }
           me.gridCells.push(gridRow);
         }
-        me.start(builder.build("ChunkosmProto"));
+        me.start(builder.build("LotsaProto"));
       });
     });
   },
 
-  start: function start(ChunkosmProto) {
+  start: function start(LotsaProto) {
     var me = this;
     me.log("Starting...");
 
@@ -48,7 +48,7 @@ var Application = {
     ws.onopen = function (event) {
       me.log("Connected");
       ws.binaryType = 'arraybuffer';
-      var msg = ChunkosmProto.MessageToServer.encode({
+      var msg = LotsaProto.MessageToServer.encode({
         chunk_request: {
           coords: [
             { universe: 0, grid: 0, x: 0, y: 0 }
@@ -63,7 +63,7 @@ var Application = {
     }
 
     ws.onmessage = function (event) {
-      var msg = ChunkosmProto.MessageToClient.decode(event.data);
+      var msg = LotsaProto.MessageToClient.decode(event.data);
       if (msg.msg == "chunk") {
         var idx = 0;
         _.each(msg.chunk.block_runs, function (blockRun) {
@@ -83,7 +83,7 @@ var Application = {
     var heartbeat = 0;
     setInterval(function() {
       if (ws && ws.readyState == 1) {
-        var msg = ChunkosmProto.MessageToServer.encode({heartbeat:  heartbeat})
+        var msg = LotsaProto.MessageToServer.encode({heartbeat:  heartbeat})
         ws.send(msg.buffer);
         heartbeat += 1;
       }

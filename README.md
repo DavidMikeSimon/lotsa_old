@@ -1,5 +1,5 @@
-Chunkosm
-========
+Lotsa
+=====
 
 Voxel world backend.
 

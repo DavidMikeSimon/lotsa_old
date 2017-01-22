@@ -1,7 +1,7 @@
 return {
   block_type_aliases = {
     empty = "-",
-    life = "O"
+    life = "S"
   },
 
   tests = {
@@ -18,7 +18,7 @@ return {
     test_underpopulation = {
       start = [[
         ---
-        -O-
+        -S-
         ---
       ]],
       after_1 = "unchanged",
@@ -27,14 +27,14 @@ return {
 
     test_overpopulation = {
       start = [[
-        OOO
-        OOO
-        OOO
+        SSS
+        SSS
+        SSS
       ]],
       after_1 = [[
-        O-O
+        S-S
         ---
-        O-O
+        S-S
       ]],
       after_2 = [[
         ---
@@ -45,8 +45,8 @@ return {
 
     test_two_by_two = {
       start = [[
-        00-
-        00-
+        SS-
+        SS-
         ---
       ]],
       after_1 = "unchanged",
@@ -56,17 +56,17 @@ return {
     test_blinker = {
       start = [[
         ---
-        OOO
+        SSS
         ---
       ]],
       after_1 = [[
-        -O-
-        -O-
-        -O-
+        -S-
+        -S-
+        -S-
       ]],
       after_2 = [[
         ---
-        OOO
+        SSS
         ---
       ]]
     }
