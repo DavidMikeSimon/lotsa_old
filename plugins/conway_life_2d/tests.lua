@@ -11,8 +11,8 @@ return {
         ---
         ---
       ]],
-      after_1 = "unchanged",
-      after_2 = "unchanged"
+      after_1 = { same_as = "start" },
+      after_2 = { same_as = "start" }
     },
 
     test_underpopulation = {
@@ -21,8 +21,8 @@ return {
         -S-
         ---
       ]],
-      after_1 = "unchanged",
-      after_2 = "unchanged"
+      after_1 = { same_as = "start" },
+      after_2 = { same_as = "start" }
     },
 
     test_overpopulation = {
@@ -49,8 +49,8 @@ return {
         SS-
         ---
       ]],
-      after_1 = "unchanged",
-      after_2 = "unchanged"
+      after_1 = { same_as = "start" },
+      after_2 = { same_as = "start" }
     },
 
     test_blinker = {

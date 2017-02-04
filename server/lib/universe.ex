@@ -45,9 +45,7 @@ defmodule Lotsa.Universe do
   end
 
   defp run_plugin_setup(universe, plugin) do
-    IO.inspect("Applying #{plugin.name}")
     changes = Lotsa.Plugin.calc_plugin_changes(universe, plugin)
-    IO.inspect(changes)
     universe
   end
 

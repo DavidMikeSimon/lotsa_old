@@ -41,7 +41,7 @@ defmodule Mix.Tasks.Lotsa.TestPlugins do
     )
     {:ok, sim} = Lotsa.Simulator.start(universe, %{chunks: [initial_chunk]})
     try do
-      IO.inspect(Lotsa.Simulator.get_chunk_proto(sim, {0,0,0,0}))
+      {:ok, chunk} = Lotsa.Simulator.get_chunk(sim, {0,0,0,0})
     after
       Lotsa.Simulator.stop(sim)
     end

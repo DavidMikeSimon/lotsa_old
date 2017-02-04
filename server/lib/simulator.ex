@@ -20,6 +20,10 @@ defmodule Lotsa.Simulator do
     GenServer.start_link(__MODULE__, {universe, options}, [])
   end
 
+  def get_chunk(simulator, coord) do
+    GenServer.call(simulator, {:get_chunk, coord})
+  end
+
   def get_chunk_proto(simulator, coord) do
     GenServer.call(simulator, {:get_chunk_proto, coord})
   end
@@ -47,6 +51,13 @@ defmodule Lotsa.Simulator do
       universe: universe,
       loaded_chunks: chunks
     }}
+  end
+
+  def handle_call({:get_chunk, coord}, _from, state) do
+    case Map.get(state.loaded_chunks, coord) do
+      nil -> {:reply, {:error, :chunk_not_found}, state}
+      chunk -> {:reply, {:ok, chunk}, state}
+    end
   end
 
   def handle_call({:get_chunk_proto, coord}, _from, state) do

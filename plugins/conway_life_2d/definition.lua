@@ -39,7 +39,7 @@ return {
       expr.count_where(is_alive, expr.eq(true))
     )
 
-    u_spawn = p.define_updater("spawn")
+    u_spawn = p.declare_updater("spawn")
 
     p.define_rule("spawning", function(r)
       r.prereq("can_spawn", input_self_is_spawnable, expr.eq(true))
@@ -47,7 +47,7 @@ return {
       r.calls(u_spawn)
     end)
 
-    u_death = p.define_updater("death")
+    u_death = p.declare_updater("death")
 
     p.define_rule("underpopulation_death", function(r)
       r.prereq("alive", input_self_is_alive, expr.eq(true))
@@ -62,4 +62,3 @@ return {
     end)
   end
 }
-
