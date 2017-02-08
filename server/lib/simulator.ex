@@ -3,7 +3,7 @@ defmodule Lotsa.Simulator do
 
   defmodule State do
     defstruct [
-      :universe,
+      :universe_def,
       :loaded_chunks
     ]
   end
@@ -12,12 +12,12 @@ defmodule Lotsa.Simulator do
   ## Client API
   ####
   
-  def start(universe, options \\ %{}) do
-    GenServer.start(__MODULE__, {universe, options}, [])
+  def start(universe_def, options \\ %{}) do
+    GenServer.start(__MODULE__, {universe_def, options}, [])
   end
 
-  def start_link(universe, options \\ %{}) do
-    GenServer.start_link(__MODULE__, {universe, options}, [])
+  def start_link(universe_def, options \\ %{}) do
+    GenServer.start_link(__MODULE__, {universe_def, options}, [])
   end
 
   def get_chunk(simulator, coord) do
@@ -40,7 +40,7 @@ defmodule Lotsa.Simulator do
   ## Server Callbacks
   ####
 
-  def init({universe, options}) do
+  def init({universe_def, options}) do
     :gproc.reg({:n, :l, :simulator}) # FIXME temporary
     chunks = if Map.has_key?(options, :chunks) do
       Map.new options.chunks, fn chunk -> {chunk.coord, chunk} end
@@ -48,7 +48,7 @@ defmodule Lotsa.Simulator do
       %{}
     end
     {:ok, %State{
-      universe: universe,
+      universe_def: universe_def,
       loaded_chunks: chunks
     }}
   end

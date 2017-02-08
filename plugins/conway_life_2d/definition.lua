@@ -4,61 +4,63 @@ return {
   dependencies = {
     {"basis", "*"}
   },
-  setup = function(p) 
-    is_alive = p.define_property("is_alive", "boolean", {
+  setup = function(p)
+    local block_targets = require "block_targets"
+    local expr = require "expr"
+
+    local basis = p.get_dependency("basis")
+
+    local is_alive = p.define_block_property("is_alive", "boolean", {
       default_value = false
     })
 
-    is_life_spawnable = p.define_property("is_life_spawnable", "boolean", {
+    local is_life_spawnable = p.define_block_property("is_life_spawnable", "boolean", {
       default_value = false
     })
 
-    bt_life = p.define_block_type("life", {
+    local bt_life = p.define_block_type("life", {
       client_hints = { color = "#00f" }
     })
     bt_life.has_property(is_alive, { fixed_value = true })
 
-    bt_empty = p.get_dependency("basis").get_block_type("empty")
+    local bt_empty = basis.get_block_type("empty")
     bt_empty.has_property(is_life_spawnable, { fixed_value = true })
 
-    input_self_is_spawnable = p.define_input(
+    local input_self_is_spawnable = p.define_block_input(
       "self_is_spawnable",
-      targets.self(),
+      block_targets.self(),
       expr.singular_value(is_life_spawnable)
     )
 
-    input_self_is_alive = p.define_input(
+    local input_self_is_alive = p.define_block_input(
       "self_is_alive",
-      targets.self(),
+      block_targets.self(),
       expr.singular_value(is_alive)
     )
 
-    input_number_of_neighbors_alive = p.define_input(
-      "number_of_neighbors_alive",
-      targets.chebyshev_neighbors(1),
+    local input_num_neighbors_alive = p.define_block_input(
+      "num_neighbors_alive",
+      block_targets.chebyshev_neighbors(1),
       expr.count_where(is_alive, expr.eq(true))
     )
 
-    u_spawn = p.declare_updater("spawn")
+    local u_spawn = p.declare_block_updater("spawn")
 
-    p.define_rule("spawning", function(r)
-      r.prereq("can_spawn", input_self_is_spawnable, expr.eq(true))
-      r.prereq("has_parents", input_number_of_neighbors_alive, expr.eq(3))
-      r.calls(u_spawn)
-    end)
+    local r_spawning = p.define_block_rule("spawning")
+    r_spawning.add_prereq("can_spawn", input_self_is_spawnable, expr.eq(true))
+    r_spawning.add_prereq("has_parents", input_num_neighbors_alive, expr.eq(3))
+    r_spawning.calls(u_spawn)
 
-    u_death = p.declare_updater("death")
+    local u_death = p.declare_block_updater("death")
 
-    p.define_rule("underpopulation_death", function(r)
-      r.prereq("alive", input_self_is_alive, expr.eq(true))
-      r.prereq("too_few_neighbors", input_number_of_neighbors_alive, expr.lt(2))
-      r.calls(u_death)
-    end)
+    local r_underpop_death = p.define_block_rule("underpop_death")
+    r_underpop_death.add_prereq("alive", input_self_is_alive, expr.eq(true))
+    r_underpop_death.add_prereq("too_few_neighbors", input_num_neighbors_alive, expr.lt(2))
+    r_underpop_death.calls(u_death)
 
-    p.define_rule("overpopulation_death", function(r)
-      r.prereq("alive", input_self_is_alive, expr.eq(true))
-      r.prereq("too_many_neighbors", input_number_of_neighbors_alive, expr.gt(4))
-      r.calls(u_death)
-    end)
+    local r_overpop_death = p.define_block_rule("overpop_death")
+    r_overpop_death.add_prereq("alive", input_self_is_alive, expr.eq(true))
+    r_overpop_death.add_prereq("too_many_neighbors", input_num_neighbors_alive, expr.gt(4))
+    r_overpop_death.calls(u_death)
   end
 }

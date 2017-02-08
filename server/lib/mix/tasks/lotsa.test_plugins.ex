@@ -16,30 +16,28 @@ defmodule Mix.Tasks.Lotsa.TestPlugins do
     Enum.each target_plugins, fn plugin ->
       test_path = Path.join([plugins_dir, plugin, "tests.lua"])
       if File.exists?(test_path) do
-        IO.puts("Testing plugin #{plugin}")
-        universe = setup_test_universe(plugin)
-        tests_def = Lua.eval_file!(Lua.State.new(), test_path)
-          |> hd
-          |> Lotsa.LuaHelpers.elixirify
-        Enum.each tests_def["tests"], fn {name, test} ->
-          run_test(universe, tests_def, "#{plugin}::#{name}", test)
+        IO.puts("Testing plugin \"#{plugin}\"")
+        universe_def = setup_test_universe(plugin)
+        testset = Lotsa.LuaHelpers.run_script(test_path)
+        Enum.each testset["tests"], fn {name, test} ->
+          run_test(universe_def, testset, "#{plugin}::#{name}", test)
         end
       else
-        IO.puts("No tests provided for plugin #{plugin}")
+        IO.puts("No tests provided for plugin \"#{plugin}\"")
       end
     end
   end
 
   defp setup_test_universe(plugin) do
-    Lotsa.Universe.new(0) |> Lotsa.Universe.add_plugin(plugin)
+    Lotsa.UniverseDef.new(0, %{plugins: [[plugin, "*"]]})
   end
 
-  defp run_test(universe, tests_def, test_name, test) do
+  defp run_test(universe_def, testset, test_name, test) do
     initial_chunk = Lotsa.Chunk.new(
       {0,0,0,0},
-      string_to_block_types(tests_def, test, "start")
+      string_to_block_types(testset, test, "start")
     )
-    {:ok, sim} = Lotsa.Simulator.start(universe, %{chunks: [initial_chunk]})
+    {:ok, sim} = Lotsa.Simulator.start(universe_def, %{chunks: [initial_chunk]})
     try do
       {:ok, chunk} = Lotsa.Simulator.get_chunk(sim, {0,0,0,0})
     after
@@ -47,7 +45,7 @@ defmodule Mix.Tasks.Lotsa.TestPlugins do
     end
   end
 
-  def string_to_block_types(tests_def, test, state_name) do
+  def string_to_block_types(testset, test, state_name) do
     str = test[state_name]
     Enum.map String.split(str), fn(line) ->
       Enum.map String.codepoints(line), fn(char) ->
