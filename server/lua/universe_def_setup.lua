@@ -6,57 +6,107 @@ local function get_plugin_def(name)
   -- TODO Verify protocol version
 end
 
-local function allocate_index(index_list, plugin_name, object_name)
-  local idx = M.size(index_list)
-  index_list[idx] = { plugin_name, object_name }
-  return idx
+local function indexed_subrc_dsl(index_list, items_list, plugin_name, object_name, defaults)
+  defaults = defaults or {}
+  if M.isNil(index_list[object_name]) then
+    local idx = M.size(index_list)
+    index_list[idx] = { plugin_name, object_name }
+    items_list[object_name] = M.extend({}, defaults, { index = idx })
+  end
+
+  local rc = items_list[object_name]
+
+  local dsl = {
+    get_index = function() return rc.index end,
+    get_desc = function() return {rc.index, plugin_name, object_name} end
+  }
+
+  return rc, dsl
 end
 
-local function new_block_type_setup_dsl(rc, plugin_name, name, options)
-  options = options or {}
+local function new_block_type_setup_dsl(rc, plugin_name, name, extras)
+  extras = extras or {}
 
-  local bt_index = nil
-  if M.isNil(rc.plugins[plugin_name].block_types[name]) then
-    bt_index = allocate_index(rc.block_type_indexes, plugin_name, name)
-    rc.plugins[plugin_name].block_types[name] = {
-      index = bt_index,
-      properties = {}
-    }
-  else
-    bt_index = rc.plugins[plugin_name].block_types[name].index
-  end
+  local bt_rc, bt_dsl = indexed_subrc_dsl(
+    rc.block_type_indexes,
+    rc.plugins[plugin_name].block_types,
+    plugin_name,
+    name,
+    { properties = {}, extras = extras }
+  )
 
   local function has_property(prop, prop_options)
     prop_options = prop_options or {}
+    M.push(bt_rc.properties, { prop = prop.get_desc(), options = prop_options } )
   end
 
-  return {
+  return M.extend(bt_dsl, {
     has_property = has_property
-  }
+  })
 end
 
 local function new_block_rule_setup_dsl(rc, plugin_name, name)
-  local rule_index = nil
-  if M.isNil(rc.plugins[plugin_name].block_rules[name]) then
-    rule_index = allocate_index(rc.block_rule_indexes, plugin_name, name)
-    rc.plugins[plugin_name].block_rules[name] = {
-      index = rule_index,
-      properties = {}
-    }
-  else
-    rule_index = rc.plugins[plugin_name].block_rules[name].index
-  end
+  local rule_rc, rule_dsl = indexed_subrc_dsl(
+    rc.block_rule_indexes,
+    rc.plugins[plugin_name].block_rules,
+    plugin_name,
+    name,
+    { prereqs = {}, calls = {} }
+  )
 
   local function add_prereq(prereq_name, input, expression)
+    M.push(rule_rc.prereqs, {
+      name = prereq_name,
+      input = input.get_desc(),
+      expression = expression
+    })
   end
 
-  local function calls(updater)
+  local function add_call(updater)
+    M.push(rule_rc.calls, {
+      updater = updater.get_desc()
+    })
   end
 
-  return {
+  return M.extend(rule_dsl, {
     add_prereq = add_prereq,
-    calls = calls
-  }
+    add_call = add_call
+  })
+end
+
+local function new_block_property_setup_dsl(rc, plugin_name, name, prop_type, options)
+  local _, prop_dsl = indexed_subrc_dsl(
+    rc.block_property_indexes,
+    rc.plugins[plugin_name].block_properties,
+    plugin_name,
+    name,
+    { prop_type = prop_type, options = options }
+  )
+
+  return prop_dsl
+end
+
+local function new_block_input_setup_dsl(rc, plugin_name, name, targets, expression)
+  local _, input_dsl = indexed_subrc_dsl(
+    rc.block_input_indexes,
+    rc.plugins[plugin_name].block_inputs,
+    plugin_name,
+    name,
+    { targets = targets, expression = expression }
+  )
+
+  return input_dsl
+end
+
+local function new_block_updater_declaration_dsl(rc, plugin_name, name)
+  local _, updater_dsl = indexed_subrc_dsl(
+    rc.block_updater_indexes,
+    rc.plugins[plugin_name].block_updaters,
+    plugin_name,
+    name
+  )
+
+  return updater_dsl
 end
 
 local function new_plugin_setup_dsl(rc, plugin_name, plugin)
@@ -95,9 +145,11 @@ local function new_plugin_setup_dsl(rc, plugin_name, plugin)
 
   local function define_block_property(name, prop_type, options)
     options = options or {}
+    return new_block_property_setup_dsl(rc, plugin_name, name, prop_type, options)
   end
 
   local function define_block_input(name, targets, expression)
+    return new_block_input_setup_dsl(rc, plugin_name, name, targets, expression)
   end
 
   local function define_block_rule(name)
@@ -105,6 +157,7 @@ local function new_plugin_setup_dsl(rc, plugin_name, plugin)
   end
 
   local function declare_block_updater(name)
+    return new_block_updater_declaration_dsl(rc, plugin_name, name)
   end
 
   return {
@@ -130,7 +183,7 @@ local function resolve_plugins(pending, stack, resolved)
   local name = M.pop(pending)[1]
   local plugin = get_plugin_def(name)
 
-  local dep_names = M.map(plugin.dependencies, function(i,v) return v[1] end)
+  local dep_names = M.map(plugin.dependencies, function(_,v) return v[1] end)
   local circular_deps = M.intersection(dep_names, stack)
   if M.size(circular_deps) > 0 then
     error("Circular dependency from " .. name .. " on " .. circular_deps[1])

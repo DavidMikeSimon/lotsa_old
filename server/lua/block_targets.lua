@@ -1,11 +1,9 @@
 local function self()
-  return { targets = [[0,0]] }
+  return { self = true }
 end
 
 local function chebyshev_neighbors(n)
-  local targets = {}
-  -- TODO
-  return { targets = targets }
+  return { chebyshev = n }
 end
 
 return {

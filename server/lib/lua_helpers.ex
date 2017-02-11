@@ -6,7 +6,7 @@ defmodule Lotsa.LuaHelpers do
     wrap_lua_call fn(_) ->
       {lua_state, lua_chunk} = Lua.load_file!(initial_state(), lib_path)
       lua_state = insert_global_functions(lua_state, provided_functions)
-      {lua_state, result} = Lua.call_chunk!(lua_state, lua_chunk)
+      {_, result} = Lua.call_chunk!(lua_state, lua_chunk)
       result
     end
   end
@@ -24,7 +24,7 @@ defmodule Lotsa.LuaHelpers do
   defp initial_state do
     lua_path = Path.expand(Path.join([Mix.Project.build_path, "..", "..", "lua"]))
     Lua.State.new()
-      |> Lua.set_table([:debug], fn(st, [term]) -> IO.inspect(term); {st, []} end)
+      |> Lua.set_table([:debug], fn(st, [term]) -> IO.inspect(elixirify(term)); {st, []} end)
       |> Lua.set_table([:package, :path], lua_path <> "/?.lua")
       |> Lua.set_table([:Lotsa], [])
   end
@@ -42,6 +42,10 @@ defmodule Lotsa.LuaHelpers do
   defp elixirify([]), do: :none # Prevent ambiguity about empty arrays vs. empty maps
   defp elixirify({:function, fun}), do: elixirify(fun)
   defp elixirify({k,v}), do: {elixirify(k), elixirify(v)}
+  defp elixirify(num) when is_float(num) do
+    int = round(num)
+    if abs(num - int) < 0.000001, do: int, else: num
+  end
   defp elixirify(fun) when is_function(fun) do
     fn(args) -> wrap_lua_call(fun, args) end
   end
@@ -50,7 +54,11 @@ defmodule Lotsa.LuaHelpers do
       # Regular list, discard the index keys
       Enum.map(term, &(elixirify(elem(&1, 1))))
     else
-      Map.new(term, &elixirify/1)
+      map = Map.new(term, &elixirify/1)
+      case map do
+        %{"get_desc" => fun} when is_function(fun) -> fun.([])
+        other -> other
+      end
     end
   end
   defp elixirify(term), do: term
