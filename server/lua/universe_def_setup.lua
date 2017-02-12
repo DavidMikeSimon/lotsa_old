@@ -7,6 +7,7 @@ local function get_plugin_def(name)
 end
 
 local function indexed_subrc_dsl(index_list, items_list, plugin_name, object_name, defaults)
+  -- TODO Validate that object_name is sensible
   defaults = defaults or {}
   if M.isNil(index_list[object_name]) then
     local idx = M.size(index_list)
@@ -110,6 +111,7 @@ local function new_block_updater_declaration_dsl(rc, plugin_name, name)
 end
 
 local function new_plugin_setup_dsl(rc, plugin_name, plugin)
+  -- TODO Validate that plugin_name is sensible
   if M.isNil(rc.plugins[plugin_name]) then
     M.push(rc.plugin_load_order, plugin_name)
 

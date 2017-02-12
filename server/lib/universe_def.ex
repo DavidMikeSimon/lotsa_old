@@ -8,7 +8,12 @@ defmodule Lotsa.UniverseDef do
 
   def new(num, config) do
     rc = resolve_config(config)
-    # TODO Assert that unknown bt is 0 and empty bt is 1
+    unless rc["block_type_indexes"][0] == ["basis", "unknown"] do
+      raise "Block type index 0 must be basis:unknown"
+    end
+    unless rc["block_type_indexes"][1] == ["basis", "empty"] do
+      raise "Block type index 1 must be basis:empty"
+    end
     IO.inspect(rc)
 
     %Lotsa.UniverseDef{
