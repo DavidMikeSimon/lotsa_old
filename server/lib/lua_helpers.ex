@@ -21,6 +21,20 @@ defmodule Lotsa.LuaHelpers do
     end
   end
 
+  def assume_map(:none), do: %{}
+  def assume_map(term), do: term
+
+  def assume_map(:none, _fun), do: %{}
+  def assume_map(map, fun) do
+    Enum.map(map, fn({k,v}) -> { k, fun.(v) } end) |> Map.new
+  end
+
+  def assume_list(:none), do: []
+  def assume_list(term), do: term
+
+  def assume_list(:none, _fun), do: []
+  def assume_list(term, fun) do Enum.map(term, fun) end
+
   defp initial_state do
     lua_path = Path.expand(Path.join([Mix.Project.build_path, "..", "..", "lua"]))
     Lua.State.new()

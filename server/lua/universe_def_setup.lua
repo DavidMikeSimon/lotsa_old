@@ -2,14 +2,20 @@ local M = require "moses"
 
 local function get_plugin_def(name)
   local path = Lotsa.get_plugin_path(name)
-  return dofile(path)
-  -- TODO Verify protocol version
+  local pdef = dofile(path)
+  if M.isNil(pdef.protocol) then
+    error("Protocol missing for \"" .. name .. "\"")
+  end
+  if pdef.protocol ~= 1 then
+    error("Unknown protocol for \"" .. name .. "\", perhaps Lotsa needs an update?")
+  end
+  return pdef
 end
 
 local function indexed_subrc_dsl(index_list, items_list, plugin_name, object_name, defaults)
   -- TODO Validate that object_name is sensible
   defaults = defaults or {}
-  if M.isNil(index_list[object_name]) then
+  if M.isNil(items_list[object_name]) then
     local idx = M.size(index_list)
     index_list[idx] = { plugin_name, object_name }
     items_list[object_name] = M.extend({}, defaults, { index = idx })
@@ -19,7 +25,13 @@ local function indexed_subrc_dsl(index_list, items_list, plugin_name, object_nam
 
   local dsl = {
     get_index = function() return rc.index end,
-    get_desc = function() return {rc.index, plugin_name, object_name} end
+    get_desc = function()
+      return {
+        index = rc.index,
+        plugin_name = plugin_name,
+        object_name = object_name
+      }
+    end
   }
 
   return rc, dsl
@@ -33,12 +45,11 @@ local function new_block_type_setup_dsl(rc, plugin_name, name, extras)
     rc.plugins[plugin_name].block_types,
     plugin_name,
     name,
-    { properties = {}, extras = extras }
+    { properties = {}, client_hints = extras.client_hints or {} }
   )
 
-  local function has_property(prop, prop_options)
-    prop_options = prop_options or {}
-    M.push(bt_rc.properties, { prop = prop.get_desc(), options = prop_options } )
+  local function has_property(prop, source)
+    M.push(bt_rc.properties, { prop = prop.get_desc(), source = source } )
   end
 
   return M.extend(bt_dsl, {
