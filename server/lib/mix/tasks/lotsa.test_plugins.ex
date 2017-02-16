@@ -30,7 +30,7 @@ defmodule Mix.Tasks.Lotsa.TestPlugins do
   end
 
   defp setup_test_universe(plugin) do
-    Lotsa.UniverseDef.new(0, %{plugins: [[plugin, "*"]]})
+    Lotsa.UniverseDefHelpers.new_from_config(0, %{plugins: [[plugin, "*"]]})
   end
 
   defp run_test(universe_def, testset, test_name, test) do

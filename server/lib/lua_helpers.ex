@@ -21,20 +21,6 @@ defmodule Lotsa.LuaHelpers do
     end
   end
 
-  def assume_map(:none), do: %{}
-  def assume_map(term), do: term
-
-  def assume_map(:none, _fun), do: %{}
-  def assume_map(map, fun) do
-    Enum.map(map, fn({k,v}) -> { k, fun.(v) } end) |> Map.new
-  end
-
-  def assume_list(:none), do: []
-  def assume_list(term), do: term
-
-  def assume_list(:none, _fun), do: []
-  def assume_list(term, fun) do Enum.map(term, fun) end
-
   defp initial_state do
     lua_path = Path.expand(Path.join([Mix.Project.build_path, "..", "..", "lua"]))
     Lua.State.new()
@@ -53,7 +39,6 @@ defmodule Lotsa.LuaHelpers do
     end
   end
 
-  defp elixirify([]), do: :none # Prevent ambiguity about empty arrays vs. empty maps
   defp elixirify({:function, fun}), do: elixirify(fun)
   defp elixirify({k,v}), do: {elixirify(k), elixirify(v)}
   defp elixirify(num) when is_float(num) do
@@ -64,18 +49,25 @@ defmodule Lotsa.LuaHelpers do
     fn(args) -> wrap_lua_call(fun, args) end
   end
   defp elixirify(term) when is_list(term) do
-    if Enum.all?(term, fn {k,_v} -> is_integer(k) end) do 
-      # Regular list, discard the index keys
-      Enum.map(term, &(elixirify(elem(&1, 1))))
-    else
-      map = Map.new(term, &elixirify/1)
-      case map do
-        %{"get_desc" => fun} when is_function(fun) -> fun.([])
-        other -> other
-      end
+    map = Map.new(term, &elixirify/1)
+    case map do
+      %{"struct" => _} -> lua_table_to_struct(map)
+      %{"get_desc" => fun} when is_function(fun) -> fun.([])
+      other -> lua_table_to_list(map)
     end
   end
   defp elixirify(term), do: term
+
+  defp lua_table_to_struct(map) do
+    map = Map.new(map, fn {key, val} -> {String.to_existing_atom(key), val} end)
+    {struct_name, map} = Map.pop(map, "struct")
+    struct(struct_name, map)
+  end
+
+  defp lua_table_to_list(map) do
+    # TODO: Assert that keys are numeric and contiguous
+    # TODO: In order by keys, return list of values
+  end
 
   defp wrap_lua_call(fun, args \\ []) do
     try do

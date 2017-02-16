@@ -6,7 +6,8 @@ return {
   },
   setup = function(p)
     local block_targets = require "block_targets"
-    local expr = require "expr"
+    local b_expr = require "boolean_expr"
+    local input_expr = require "input_expr"
 
     local basis = p.get_dependency("basis")
 
@@ -29,38 +30,38 @@ return {
     local input_self_is_spawnable = p.define_block_input(
       "self_is_spawnable",
       block_targets.self(),
-      expr.singular_value(is_life_spawnable)
+      input_expr.singular_value(is_life_spawnable)
     )
 
     local input_self_is_alive = p.define_block_input(
       "self_is_alive",
       block_targets.self(),
-      expr.singular_value(is_alive)
+      input_expr.singular_value(is_alive)
     )
 
     local input_num_neighbors_alive = p.define_block_input(
       "num_neighbors_alive",
       block_targets.chebyshev_neighbors(1),
-      expr.count_where(is_alive, expr.eq(true))
+      input_expr.count_where(is_alive, b_expr.eq(true))
     )
 
     local u_spawn = p.declare_block_updater("spawn")
 
     local r_spawning = p.define_block_rule("spawning")
-    r_spawning.add_prereq("can_spawn", input_self_is_spawnable, expr.eq(true))
-    r_spawning.add_prereq("has_parents", input_num_neighbors_alive, expr.eq(3))
+    r_spawning.add_prereq("can_spawn", input_self_is_spawnable, b_expr.eq(true))
+    r_spawning.add_prereq("has_parents", input_num_neighbors_alive, b_expr.eq(3))
     r_spawning.add_call(u_spawn)
 
     local u_death = p.declare_block_updater("death")
 
     local r_underpop_death = p.define_block_rule("underpop_death")
-    r_underpop_death.add_prereq("alive", input_self_is_alive, expr.eq(true))
-    r_underpop_death.add_prereq("too_few_neighbors", input_num_neighbors_alive, expr.lt(2))
+    r_underpop_death.add_prereq("alive", input_self_is_alive, b_expr.eq(true))
+    r_underpop_death.add_prereq("too_few_neighbors", input_num_neighbors_alive, b_expr.lt(2))
     r_underpop_death.add_call(u_death)
 
     local r_overpop_death = p.define_block_rule("overpop_death")
-    r_overpop_death.add_prereq("alive", input_self_is_alive, expr.eq(true))
-    r_overpop_death.add_prereq("too_many_neighbors", input_num_neighbors_alive, expr.gt(4))
+    r_overpop_death.add_prereq("alive", input_self_is_alive, b_expr.eq(true))
+    r_overpop_death.add_prereq("too_many_neighbors", input_num_neighbors_alive, b_expr.gt(4))
     r_overpop_death.add_call(u_death)
   end
 }

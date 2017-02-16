@@ -5,22 +5,140 @@ package LotsaProto;
 ///////////////////
 
 message Coord {
-    required sint32 universe = 1;
-    required sint32 grid = 2;
-    required sint32 x = 3;
-    required sint32 y = 4;
+  required sint32 universe = 1;
+  required sint32 grid = 2;
+  required sint32 x = 3;
+  required sint32 y = 4;
 }
 
 message Chunk {
-    required Coord pos = 1;
-    required sint32 ver = 2;
+  required Coord pos = 1;
+  required sint32 ver = 2;
 
-    message BlockRun {
-        required uint32 count = 1;
-        required uint32 block_type = 2;
+  message BlockRun {
+    required uint32 count = 1;
+    required uint32 block_type = 2;
+  }
+
+  repeated BlockRun block_runs = 3;
+}
+
+///////////////////
+// Universe Definition
+///////////////////
+
+message PluginDescription {
+  message Version {
+    required uint32 major = 1;
+    required uint32 minor = 2;
+    required uint32 patch = 3;
+  }
+
+  required string name = 1;
+  required Version version = 2;
+  repeated string impl_lua = 3;
+}
+
+message BooleanExpression {
+  oneof e {
+    string eq = 1;
+    string lt = 2;
+    string gt = 3;
+  }
+}
+
+message InputExpression {
+  message CountWhere {
+    required uint32 block_property = 1;
+    required BooleanExpression b_expr = 2;
+  }
+
+  oneof e {
+    string singular_value = 1;
+    CountWhere count_where = 2;
+  }
+}
+
+message BlockTypeDef {
+  message PropertyProvision {
+    required uint32 block_property = 1;
+
+    message FixedValue {
+      required string value = 1;
     }
 
-    repeated BlockRun block_runs = 3;
+    oneof source {
+      FixedValue fixed_value = 2;
+    }
+  }
+
+  message ClientHint {
+    required string key = 1;
+    required string value = 2;
+  }
+
+  required string plugin_name = 1;
+  required string name = 2;
+  required uint32 index = 3;
+  repeated PropertyProvision property_provisions = 4;
+  repeated ClientHint client_hints = 5;
+}
+
+message BlockPropertyDef {
+  enum PropType {
+    BOOLEAN = 0;
+  }
+
+  required string plugin_name = 1;
+  required string name = 2;
+  required uint32 index = 3;
+  required PropType prop_type = 4;
+  required string default_value = 5;
+}
+
+message BlockInputDef {
+  message SelfTarget {}
+  message ChebyshevNeighborsTarget {
+    required uint32 range = 1;
+  }
+
+  required string plugin_name = 1;
+  required string name = 2;
+  required uint32 index = 3;
+  oneof target {
+    SelfTarget self = 4;
+    ChebyshevNeighborsTarget chebyshev_neighbors = 5;
+  }
+}
+
+message BlockRuleDef {
+  message Prereq {
+    required string name = 1;
+    required uint32 block_input = 2;
+    required BooleanExpression b_expr = 3;
+  }
+
+  required string plugin_name = 1;
+  required string name = 2;
+  required uint32 index = 3;
+  repeated Prereq prereqs = 4;
+  repeated uint32 updaters_called = 5;
+}
+
+message BlockUpdaterDef {
+  required string plugin_name = 1;
+  required string name = 2;
+  required uint32 index = 3;
+}
+
+message UniverseDef {
+  required uint32 num = 1;
+  repeated PluginDescription plugins = 2;
+  repeated BlockTypeDef block_type_defs = 3;
+  repeated BlockPropertyDef block_property_defs = 4;
+  repeated BlockInputDef block_input_defs = 5;
+  repeated BlockRuleDef block_rule_defs = 6;
+  repeated BlockUpdaterDef block_updater_defs = 7;
 }
 
 ///////////////////
@@ -28,14 +146,14 @@ message Chunk {
 ///////////////////
 
 message ChunkRequest {
-    repeated Coord coords = 1;
+  repeated Coord coords = 1;
 }
 
 message MessageToServer {
-    oneof msg {
-       ChunkRequest chunk_request = 1;
-       uint32 heartbeat = 2;
-    }
+  oneof msg {
+     ChunkRequest chunk_request = 1;
+     uint32 heartbeat = 2;
+  }
 }
 
 ///////////////////
@@ -43,9 +161,9 @@ message MessageToServer {
 ///////////////////
 
 message MessageToClient {
-    oneof msg {
-        Chunk chunk = 1;
-        uint32 heartbeat_ack = 2;
-        string global_notice = 3;
-    }
+  oneof msg {
+    Chunk chunk = 1;
+    uint32 heartbeat_ack = 2;
+    string global_notice = 3;
+  }
 }
