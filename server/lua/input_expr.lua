@@ -1,8 +1,8 @@
-local function singular_value(prop)
-  return { singular_value = prop }
+local function get_value(prop)
+  return { get_value = prop }
 end
 
-local function count_where(prop, b_expr)
+local function count_where(prop, bexpr)
   return { count_where = { prop = prop, b_expr = b_expr } }
 end
 

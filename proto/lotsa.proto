@@ -23,6 +23,14 @@ message Chunk {
   repeated BlockRun block_runs = 3;
 }
 
+message GenericValue {
+  oneof v {
+    string string = 1;
+    bool boolean = 2;
+    int32 integer = 3;
+  }
+}
+
 ///////////////////
 // Universe Definition
 ///////////////////
@@ -36,52 +44,52 @@ message PluginDescription {
 
   required string name = 1;
   required Version version = 2;
-  repeated string impl_lua = 3;
+  required uint32 load_order = 3;
+  repeated string lua_impls = 4;
 }
 
 message BooleanExpression {
-  oneof e {
-    string eq = 1;
-    string lt = 2;
-    string gt = 3;
+  oneof fn {
+    GenericValue eq = 10;
+    GenericValue lt = 11;
+    GenericValue gt = 12;
   }
 }
 
 message InputExpression {
+  message FetchValue {
+    required uint32 property = 1;
+  }
+
   message CountWhere {
-    required uint32 block_property = 1;
+    required uint32 property = 1;
     required BooleanExpression b_expr = 2;
   }
 
   oneof e {
-    string singular_value = 1;
-    CountWhere count_where = 2;
+    FetchValue fetch_value = 10;
+    CountWhere count_where = 11;
   }
 }
 
 message BlockTypeDef {
   message PropertyProvision {
-    required uint32 block_property = 1;
-
     message FixedValue {
-      required string value = 1;
+      required GenericValue value = 1;
     }
+
+    required uint32 property = 1;
 
     oneof source {
-      FixedValue fixed_value = 2;
+      FixedValue fixed_value = 10;
     }
-  }
-
-  message ClientHint {
-    required string key = 1;
-    required string value = 2;
   }
 
   required string plugin_name = 1;
   required string name = 2;
   required uint32 index = 3;
   repeated PropertyProvision property_provisions = 4;
-  repeated ClientHint client_hints = 5;
+  map<string, string> client_hints = 5;
 }
 
 message BlockPropertyDef {
@@ -93,7 +101,7 @@ message BlockPropertyDef {
   required string name = 2;
   required uint32 index = 3;
   required PropType prop_type = 4;
-  required string default_value = 5;
+  required GenericValue default_value = 5;
 }
 
 message BlockInputDef {
@@ -105,8 +113,9 @@ message BlockInputDef {
   required string plugin_name = 1;
   required string name = 2;
   required uint32 index = 3;
+
   oneof target {
-    SelfTarget self = 4;
+    SelfTarget self = 10;
     ChebyshevNeighborsTarget chebyshev_neighbors = 5;
   }
 }
@@ -133,12 +142,13 @@ message BlockUpdaterDef {
 
 message UniverseDef {
   required uint32 num = 1;
-  repeated PluginDescription plugins = 2;
-  repeated BlockTypeDef block_type_defs = 3;
-  repeated BlockPropertyDef block_property_defs = 4;
-  repeated BlockInputDef block_input_defs = 5;
-  repeated BlockRuleDef block_rule_defs = 6;
-  repeated BlockUpdaterDef block_updater_defs = 7;
+  map<string, PluginDescription> plugins = 2;
+  // All keys below are in the format "plugin:name", e.g. "basis:empty"
+  map<string, PropertyDef> properties = 3;
+  map<string, BlockTypeDef> block_types = 4;
+  map<string, BlockInputDef> block_inputs = 5;
+  map<string, BlockRuleDef> block_rules = 6;
+  map<string, BlockUpdaterDef> block_updaters = 7;
 }
 
 ///////////////////
@@ -151,8 +161,8 @@ message ChunkRequest {
 
 message MessageToServer {
   oneof msg {
-     ChunkRequest chunk_request = 1;
-     uint32 heartbeat = 2;
+     ChunkRequest chunk_request = 10;
+     uint32 heartbeat = 11;
   }
 }
 
@@ -162,8 +172,8 @@ message MessageToServer {
 
 message MessageToClient {
   oneof msg {
-    Chunk chunk = 1;
-    uint32 heartbeat_ack = 2;
-    string global_notice = 3;
+    Chunk chunk = 10;
+    uint32 heartbeat_ack = 11;
+    string global_notice = 12;
   }
 }

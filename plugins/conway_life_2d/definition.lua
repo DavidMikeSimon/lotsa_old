@@ -11,32 +11,32 @@ return {
 
     local basis = p.get_dependency("basis")
 
-    local is_alive = p.define_block_property("is_alive", "boolean", {
+    local is_alive = p.define_property("is_alive", "boolean", {
       default_value = false
     })
 
-    local is_life_spawnable = p.define_block_property("is_life_spawnable", "boolean", {
+    local is_life_spawnable = p.define_property("is_life_spawnable", "boolean", {
       default_value = false
     })
 
     local bt_life = p.define_block_type("life", {
       client_hints = { color = "#00f" }
     })
-    bt_life.has_property(is_alive, { fixed_value = true })
+    bt_life.provide_property(is_alive, { fixed_value = true })
 
     local bt_empty = basis.get_block_type("empty")
-    bt_empty.has_property(is_life_spawnable, { fixed_value = true })
+    bt_empty.provide_property(is_life_spawnable, { fixed_value = true })
 
     local input_self_is_spawnable = p.define_block_input(
       "self_is_spawnable",
       block_targets.self(),
-      input_expr.singular_value(is_life_spawnable)
+      input_expr.fetch_value(is_life_spawnable)
     )
 
     local input_self_is_alive = p.define_block_input(
       "self_is_alive",
       block_targets.self(),
-      input_expr.singular_value(is_alive)
+      input_expr.fetch_value(is_alive)
     )
 
     local input_num_neighbors_alive = p.define_block_input(

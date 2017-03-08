@@ -51,22 +51,35 @@ defmodule Lotsa.LuaHelpers do
   defp elixirify(term) when is_list(term) do
     map = Map.new(term, &elixirify/1)
     case map do
-      %{"struct" => _} -> lua_table_to_struct(map)
-      %{"get_desc" => fun} when is_function(fun) -> fun.([])
+      %{"_table_type" => %{"proto" => _}} -> lua_table_to_proto_struct(map)
+      %{"_table_type" => "map"} -> lua_table_to_map(map)
       other -> lua_table_to_list(map)
     end
   end
   defp elixirify(term), do: term
 
-  defp lua_table_to_struct(map) do
-    map = Map.new(map, fn {key, val} -> {String.to_existing_atom(key), val} end)
-    {struct_name, map} = Map.pop(map, "struct")
-    struct(struct_name, map)
+  defp lua_table_to_proto_struct(table) do
+    map = Map.new(table, fn {key, val} -> {String.to_existing_atom(key), val} end)
+    {%{"proto" => proto_name}, map} = Map.pop(map, "_table_type")
+    struct("Lotsa.Proto.#{struct_name}", map)
   end
 
-  defp lua_table_to_list(map) do
-    # TODO: Assert that keys are numeric and contiguous
-    # TODO: In order by keys, return list of values
+  defp lua_table_to_map(table) do
+    {_, map} = Map.pop(table, "_table_type")
+    map
+  end
+
+  defp lua_table_to_list(table) do
+    pairs = Map.to_list(table)
+      |>  Enum.sort_by(fn {k, _} -> k end)
+
+    Stream.map(pairs, fn {k, _} -> k end)
+      |> Stream.zip(0..(map_size(pairs)-1))
+      |> Stream.each(fn {k1, k2} ->
+        if k1 != k2, do: raise RuntimeError, "Invalid table key sequence for list"
+      end)
+
+    Enum.map pairs, fn({_, v}) -> v end
   end
 
   defp wrap_lua_call(fun, args \\ []) do
