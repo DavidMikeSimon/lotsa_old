@@ -21,8 +21,12 @@ return {
         -S-
         ---
       ]],
-      after_1 = { same_as = "start" },
-      after_2 = { same_as = "start" }
+      after_1 = [[
+        ---
+        ---
+        ---
+      ]],
+      after_2 = { same_as = "after_1" }
     },
 
     test_overpopulation = {

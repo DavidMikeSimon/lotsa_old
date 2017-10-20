@@ -147,3 +147,8 @@ process and start it up again.
 lua_sethook: The same anti-blocking approaches from the "How to avoid blocking?" question could also
 work for getting out of runaway scripts; we just don't even bother to yield the Lua state, but
 instead get rid of it.
+
+# Plugin syntax
+
+Instead of the `expr` helper methods, maybe we can overload all the operators on some sort of
+expression object, allowing the use of natural Lua syntax?
