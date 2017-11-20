@@ -1,10 +1,10 @@
-/_build
-/deps
 /.vagrant
 /vbin
 /webtest/public
 /webtest/node_modules
-/server/build_time
+/server/_build
+/server/deps
+server.build_time
 erl_crash.dump
 *.ez
 .settings

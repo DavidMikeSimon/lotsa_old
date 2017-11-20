@@ -1,4 +1,4 @@
-jefmodule Lotsa.UniverseDefHelpers do
+defmodule Lotsa.UniverseDefHelpers do
   def new_from_config(num, config) do
     universe_def = resolve_config(num, config)
 

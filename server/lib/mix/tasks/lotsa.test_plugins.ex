@@ -24,6 +24,7 @@ defmodule Mix.Tasks.Lotsa.TestPlugins do
           run_test(universe_def, testset, "#{plugin}::#{name}", test)
         end
       else
+        # TODO Complain if the plugin doesn't exist at all
         IO.puts("No tests provided for plugin \"#{plugin}\"")
       end
     end

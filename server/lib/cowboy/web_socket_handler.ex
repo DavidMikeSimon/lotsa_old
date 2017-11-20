@@ -1,6 +1,7 @@
 defmodule Lotsa.Cowboy.WebSocketHandler do
   @behaviour :cowboy_websocket_handler
 
+  require Lotsa.Proto
   alias Lotsa.Proto.MessageToServer
   alias Lotsa.Proto.MessageToClient
 

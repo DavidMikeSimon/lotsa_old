@@ -92,7 +92,7 @@ message BlockTypeDef {
   map<string, string> client_hints = 5;
 }
 
-message BlockPropertyDef {
+message PropertyDef {
   enum PropType {
     BOOLEAN = 0;
   }

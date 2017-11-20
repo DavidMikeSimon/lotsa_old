@@ -286,5 +286,6 @@ local function setup(universe_num, config)
 end
 
 return {
+  _table_type = "map",
   setup = setup
 }

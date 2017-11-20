@@ -11,8 +11,8 @@ defmodule Lotsa.LuaHelpers do
     end
   end
 
-  def call_library_func(library, function, args \\ []) do
-    library[function].(args)
+  def call_library_func(library, func, args \\ []) do
+    library[func].(args)
   end
 
   def run_script(path) do
@@ -24,7 +24,7 @@ defmodule Lotsa.LuaHelpers do
   defp initial_state do
     lua_path = Path.expand(Path.join([Mix.Project.build_path, "..", "..", "lua"]))
     Lua.State.new()
-      |> Lua.set_table([:debug], fn(st, [term]) -> IO.inspect(elixirify(term)); {st, []} end)
+      |> Lua.set_table([:debug], fn(st, [term]) -> {st, []} end)
       |> Lua.set_table([:package, :path], lua_path <> "/?.lua")
       |> Lua.set_table([:Lotsa], [])
   end
@@ -61,7 +61,7 @@ defmodule Lotsa.LuaHelpers do
   defp lua_table_to_proto_struct(table) do
     map = Map.new(table, fn {key, val} -> {String.to_existing_atom(key), val} end)
     {%{"proto" => proto_name}, map} = Map.pop(map, "_table_type")
-    struct("Lotsa.Proto.#{struct_name}", map)
+    struct("Lotsa.Proto.#{proto_name}", map)
   end
 
   defp lua_table_to_map(table) do
@@ -74,9 +74,9 @@ defmodule Lotsa.LuaHelpers do
       |>  Enum.sort_by(fn {k, _} -> k end)
 
     Stream.map(pairs, fn {k, _} -> k end)
-      |> Stream.zip(0..(map_size(pairs)-1))
-      |> Stream.each(fn {k1, k2} ->
-        if k1 != k2, do: raise RuntimeError, "Invalid table key sequence for list"
+      |> Stream.zip(Stream.iterate(0, &(&1+1)))
+      |> Enum.each(fn {k1, k2} ->
+        if k1 != k2, do: raise RuntimeError, "Invalid lua table key sequence for list, need #{k2}, got #{inspect k1}"
       end)
 
     Enum.map pairs, fn({_, v}) -> v end
