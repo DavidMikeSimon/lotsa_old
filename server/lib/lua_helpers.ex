@@ -87,8 +87,8 @@ defmodule Lotsa.LuaHelpers do
       fun.(args) |> hd |> elixirify
     rescue
       e -> case e do
-        %ErlangError{original: {:lua_error, lua_err, _}} ->
-          raise RuntimeError, inspect({:lua_error, lua_err})
+        %ErlangError{original: {:lua_error, lua_err, _state}} ->
+          reraise "Lua Error: " <> to_string(:luerl_lib.format_error(lua_err)), System.stacktrace
         other ->
           reraise other, System.stacktrace
       end
