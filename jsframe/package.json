@@ -1,0 +1,10 @@
+{
+  "name": "lotsa-jsframe",
+  "description": "Javascript framework for Lotsa plugins",
+  "author": "David Simon",
+  "version": "0.0.1",
+  "dependencies": {
+    "lodash": "4.16.6",
+    "node_erlastic": "DavidMikeSimon/node_erlastic"
+  }
+}
