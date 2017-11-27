@@ -18,7 +18,7 @@ defmodule Lotsa.UniverseDefHelpers do
   def validate_universe_def(universe_def) do
     # TODO: Assert that actual list indexes and internal indexes match
     # TODO: Assert that all index references point at something real
-    # TODO: ASsert that PluginDescription load_orders are contiguous from 0
+    # TODO: Assert that PluginDescription load_orders are contiguous from 0
   end
 
   defp get_plugin_path(name) do

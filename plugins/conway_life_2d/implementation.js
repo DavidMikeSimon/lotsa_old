@@ -1,12 +1,14 @@
-module.exports = (i) => {
-  const btLife = i.fetchBlockType("conwayLife2d", "life");
-  const btEmpty = i.fetchBlockType("basis", "empty");
+module.exports = {
+  blockUpdaters: (i) => {
+    const btLife = i.fetchBlockType("conwayLife2d", "life");
+    const btEmpty = i.fetchBlockType("basis", "empty");
 
-  i.implementBlockUpdater("spawn", {}, () => {
-    return { blockType: btLife };
-  });
+    i.implement("spawn", {}, () => {
+      return { blockType: btLife };
+    });
 
-  i.implementBlockUpdater("death", {}, () => {
-    return { blockType: btEmpty };
-  });
+    i.implement("death", {}, () => {
+      return { blockType: btEmpty };
+    });
+  }
 };
