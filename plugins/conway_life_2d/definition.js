@@ -5,58 +5,40 @@ module.exports = {
     basis: "*",
   },
   setup: (p) => {
-    const isAlive = p.defineProperty("isAlive", "boolean", {
+    p.defProperty("isAlive", "boolean", {
       defaultValue: false,
     });
 
-    const isLifeSpawnable = p.defineProperty("isLifeSpawnable", "boolean", {
+    p.defProperty("isLifeSpawnable", "boolean", {
       defaultValue: false,
     });
 
-    const btLife = p.defineBlockType("life", {
-      clientHints: { color: "#00f" },
-    });
-    btLife.provideProperty(isAlive, { fixedValue: true });
+    p.defBlockType("life", {
+        clientHints: { color: "#00f" },
+    }).provideProperty(isAlive, { $constant: true });
 
-    const basis = p.getDependency("basis");
-    const btEmpty = basis.getBlockType("empty");
-    btEmpty.provideProperty(isLifeSpawnable, { fixedValue: true });
+    p.getDependency("basis")
+      .getBlockType("empty")
+      .provideProperty(isLifeSpawnable, { $constant: true });
 
-    const inputSelfIsSpawnable = p.defineBlockInput(
-      "selfIsSpawnable",
-      p.blockTargets.self(),
-      p.inputExpr.fetchValue(isLifeSpawnable)
-    );
+    const NUM_NEIGHBORS_ALIVE = { $count: [
+      { $chebyshev: 1 },
+      { $filter: { $eq: [ "isAlive", true ] } },
+    ] };
 
-    const inputSelfIsAlive = p.defineBlockInput(
-      "selfIsAlive",
-      p.blockTargets.self(),
-      p.inputExpr.fetchValue(isAlive)
-    );
+    p.defBlockRule("spawning")
+      .addPrereq("canSpawn", { $eq: [ "isLifeSpawnable", true ] })
+      .addPrereq("hasParents", { $eq: [ NUM_NEIGHBORS_ALIVE, 3 ] })
+      .callBlockUpdater("spawn");
 
-    const inputNumNeighborsAlive = p.defineBlockInput(
-      "numNeighborsAlive",
-      p.blockTargets.chebyshevNeighbors(1),
-      p.inputExpr.countWhere(isAlive, p.bExpr.eq(true))
-    );
+    p.defBlockRule("underpopDeath")
+      .addPrereq("alive", { $eq: [ "isAlive", true ] })
+      .addPrereq("tooFewNeighbors", { $lt: [ NUM_NEIGHBORS_ALIVE, 2 ] })
+      .callBlockUpdater("death");
 
-    const uSpawn = p.declareBlockUpdater("spawn");
-
-    const rSpawning = p.defineBlockRule("spawning");
-    rSpawning.addPrereq("canSpawn", inputSelfIsSpawnable, p.bExpr.eq(true));
-    rSpawning.addPrereq("hasParents", inputNumNeighborsAlive, p.bExpr.eq(3));
-    rSpawning.addCall(uSpawn);
-
-    const uDeath = p.declareBlockUpdater("death");
-
-    const rUnderpopDeath = p.defineBlockRule("underpopDeath");
-    rUnderpopDeath.addPrereq("alive", inputSelfIsAlive, p.bExpr.eq(true));
-    rUnderpopDeath.addPrereq("tooFewNeighbors", inputNumNeighborsAlive, p.bExpr.lt(2));
-    rUnderpopDeath.addCall(uDeath);
-
-    const rOverpopDeath = p.defineBlockRule("overpopDeath");
-    rOverpopDeath.addPrereq("alive", inputSelfIsAlive, p.bExpr.eq(true));
-    rOverpopDeath.addPrereq("tooManyNeighbors", inputNumNeighborsAlive, p.bExpr.gt(4));
-    rOverpopDeath.addCall(uDeath);
+    p.defBlockRule("overpopDeath")
+      .addPrereq("alive", { $eq: [ "isAlive", true ] })
+      .addPrereq("tooManyNeighbors", { $gt: [ NUM_NEIGHBORS_ALIVE, 4 ] })
+      .callBlockUpdater("death");
   },
 };
