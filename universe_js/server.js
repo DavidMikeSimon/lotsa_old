@@ -5,10 +5,10 @@ erlastic.server(
     const {command, args} = term;
 
     switch (command) {
-      case "load":
-        return done("reply", null);
-      default;
-        throw new Error("unknown command")
+      case "ping":
+        return done("reply", "pong");
+      default:
+        throw new Error("unknown command in: " + JSON.stringify(term))
     }
   },
   () => {

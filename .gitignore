@@ -2,7 +2,7 @@
 /vbin
 /webtest/public
 /webtest/node_modules
-/jsframe/node_modules
+/universe_js/node_modules
 /server/_build
 /server/deps
 server.build_time

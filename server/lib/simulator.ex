@@ -42,11 +42,13 @@ defmodule Lotsa.Simulator do
 
   def init({universe_def, options}) do
     :gproc.reg({:n, :l, :simulator}) # FIXME temporary
+
     chunks = if Map.has_key?(options, :chunks) do
       Map.new options.chunks, fn chunk -> {chunk.coord, chunk} end
     else
       %{}
     end
+
     {:ok, %State{
       universe_def: universe_def,
       loaded_chunks: chunks

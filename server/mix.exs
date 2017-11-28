@@ -23,10 +23,7 @@ defmodule Lotsa.Mixfile do
     [
       {:cowboy, "~> 1.0.0"},
       {:exprotobuf, "~> 1.2.0"},
-      {:gproc, "0.6.1"},
-      {:luerl, github: "bendiken/luerl", branch: "exlua",
-        compile: "make && cp src/luerl.app.src ebin/luerl.app"},
-      {:exlua, "~> 0.3.0"}
+      {:gproc, "0.6.1"}
     ]
   end
 end
