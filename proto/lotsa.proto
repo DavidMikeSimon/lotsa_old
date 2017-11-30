@@ -141,14 +141,13 @@ message BlockUpdaterDef {
 }
 
 message UniverseDef {
-  required uint32 num = 1;
+  required string url = 1;
   map<string, PluginDescription> plugins = 2;
   // All keys below are in the format "plugin:name", e.g. "basis:empty"
   map<string, PropertyDef> properties = 3;
   map<string, BlockTypeDef> block_types = 4;
-  map<string, BlockInputDef> block_inputs = 5;
-  map<string, BlockRuleDef> block_rules = 6;
-  map<string, BlockUpdaterDef> block_updaters = 7;
+  map<string, BlockRuleDef> block_rules = 5;
+  map<string, BlockUpdaterDef> block_updaters = 6;
 }
 
 ///////////////////

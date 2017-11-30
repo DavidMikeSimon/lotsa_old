@@ -1,5 +1,17 @@
 defmodule Lotsa.UniverseJS do
   # TODO Factor out common stuff into new node_erlastic behavior
+
+  defmodule JSError do
+    defexception [:summary, :trace]
+
+    def message(error) do
+      indented = error.trace
+                 |> String.split("\n")
+                 |> Enum.map_join("\n", &("            #{&1}"))
+      "\n#{indented}"
+    end
+  end
+
   use GenServer
 
   ####
@@ -14,12 +26,16 @@ defmodule Lotsa.UniverseJS do
     GenServer.start_link(__MODULE__, {options}, [])
   end
 
-  def ping(js) do
-    GenServer.call(js, {:ping, {}})
+  def ping(pid) do
+    GenServer.call(pid, {:ping, {}})
   end
 
-  def stop(js) do
-    GenServer.stop(js)
+  def load_config(pid, json) do
+    GenServer.call(pid, {:load_config, {json}})
+  end
+
+  def stop(pid) do
+    GenServer.stop(pid)
   end
 
   ####
@@ -48,7 +64,12 @@ defmodule Lotsa.UniverseJS do
     response = receive do
       {^port, {:data, b}} -> :erlang.binary_to_term(b)
     end
-    {:reply, response, port}
+
+    case response do
+      {:error, {_, _, _, msg, trace}} ->
+        raise JSError, summary: msg, trace: trace
+      _ -> {:reply, response, port}
+    end
   end
 
   def handle_info({port, {:exit_status,0}}, port), do: {:stop, :normal, port}
