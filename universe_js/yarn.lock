@@ -8,4 +8,10 @@ lodash@4.16.6:
 
 node_erlastic@DavidMikeSimon/node_erlastic:
   version "0.0.8"
-  resolved "https://codeload.github.com/DavidMikeSimon/node_erlastic/tar.gz/0389f5cc59747e306eb02609c3b5917674d4a974"
+  resolved "https://codeload.github.com/DavidMikeSimon/node_erlastic/tar.gz/65216faead08dd1d55a80d745e34e894737aaca9"
+  dependencies:
+    tuple-w "^1.1"
+
+tuple-w@^1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/tuple-w/-/tuple-w-1.1.1.tgz#5a5073ff189bd397c93b3192bcdd9e4fe58856a4"
