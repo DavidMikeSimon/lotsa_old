@@ -63,7 +63,7 @@ long@^3.2.0:
 
 node_erlastic@DavidMikeSimon/node_erlastic:
   version "0.0.8"
-  resolved "https://codeload.github.com/DavidMikeSimon/node_erlastic/tar.gz/65216faead08dd1d55a80d745e34e894737aaca9"
+  resolved "https://codeload.github.com/DavidMikeSimon/node_erlastic/tar.gz/39232f610214856608cc2a82ce2022a21dc4d463"
   dependencies:
     tuple-w "^1.1"
 

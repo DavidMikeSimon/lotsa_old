@@ -1,6 +1,7 @@
 const ProtoBuf = require('ProtoBufjs');
 const Tuple = require('tuple-w');
 const erlastic = require('node_erlastic');
+const bert = erlastic.bert;
 
 function loadConfig(config, protoRoot) {
   const UniverseDef = protoRoot.lookupType("LotsaProto.UniverseDef");
@@ -21,7 +22,7 @@ function main() {
             case "load_config":
               const config = JSON.parse(args[0]);
               const udefBuffer = loadConfig(config, protoRoot);
-              return done("reply", new Tuple("protobuf", "UniverseDef", udefBuffer));
+              return done("reply", new Tuple(bert.atom("protobuf"), bert.atom("UniverseDef"), udefBuffer));
             default:
               throw new Error("unknown command " + command)
           }

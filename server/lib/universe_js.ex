@@ -68,7 +68,7 @@ defmodule Lotsa.UniverseJS do
     case response do
       {:error, {_, _, _, msg, trace}} ->
         raise JSError, summary: msg, trace: trace
-      {"protobuf", "UniverseDef", bin} ->
+      {:protobuf, :UniverseDef, bin} ->
         {:reply, Lotsa.Proto.UniverseDef.decode(bin), port}
       _ ->
         {:reply, response, port}
