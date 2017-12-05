@@ -5,6 +5,7 @@
   "version": "0.0.1",
   "dependencies": {
     "lodash": "4.16.6",
-    "node_erlastic": "DavidMikeSimon/node_erlastic"
+    "node_erlastic": "DavidMikeSimon/node_erlastic",
+    "protobufjs": "6.8.3"
   }
 }
