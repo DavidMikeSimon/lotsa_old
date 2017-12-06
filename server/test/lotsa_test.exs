@@ -11,7 +11,10 @@ defmodule LotsaTest do
   end
 
   test "creating a UniverseDef from a minimal config with UniverseJS" do
-    config = '{ "url": "http://example.com/lotsa/1", "plugins": [["basis", "*"]] }'
+    config = JSON.encode!([
+      url: "http://example.com/lotsa/1",
+      plugins: [ ["basis", "*"] ]
+    ])
 
     expected = %Lotsa.Proto.UniverseDef{
       url: "http://example.com/lotsa/1",

@@ -1,8 +1,9 @@
 %{"cowboy": {:hex, :cowboy, "1.0.0", "d0b46a5e5f971c5543eb46f86fe76b9add567d12fb5262a852b8f27c64c0555d", [:make, :rebar], [{:cowlib, "~> 1.0.0", [hex: :cowlib, optional: false]}, {:ranch, "~> 1.0", [hex: :ranch, optional: false]}]},
   "cowlib": {:hex, :cowlib, "1.0.1", "175a633c472058bbeb1b238a6409766a48b52b43b7b687ed70f03cf6e854b7d9", [:make], []},
   "exlua": {:hex, :exlua, "0.3.0", "67883918b5caa9debdf2c26a508669d2309295de4682c656babd00713c5b4eb3", [:mix], []},
-  "exprotobuf": {:hex, :exprotobuf, "1.2.1", "5658b9f602719e145cc9398715843f64bab635c2a448e366b8855db72deabfbd", [:mix], [{:gpb, "~> 3.24", [hex: :gpb, optional: false]}]},
-  "gpb": {:hex, :gpb, "3.26.4", "d7abdeb17cf226f29bbc3bfbbe14281f35fdb34d6fb13a12819334af3d1af73f", [:rebar, :make], []},
+  "exprotobuf": {:hex, :exprotobuf, "1.2.9", "f3cac1b0d0444da3c72cdfe80e394d721275dc80b1d7703ead9dad9267e93822", [:mix], [{:gpb, "~> 3.24", [hex: :gpb, repo: "hexpm", optional: false]}], "hexpm"},
+  "gpb": {:hex, :gpb, "3.28.1", "6849b2f0004dc4e7644f4f67e7cdd18e893f0ab87eb7ad82b9cb1483ce60eed0", [:make, :rebar], [], "hexpm"},
   "gproc": {:hex, :gproc, "0.6.1", "4579663e5677970758a05d8f65d13c3e9814ec707ad51d8dcef7294eda1a730c", [:rebar3], []},
+  "json": {:hex, :json, "1.0.2", "fa75ed4f355cd4ab468c25588171f8002a7274d3d5fb376c18822ddfc7c33f1f", [], [], "hexpm"},
   "luerl": {:git, "https://github.com/bendiken/luerl.git", "3e697635bf71d840cb08876d1ac1924ea13933bb", [branch: "exlua"]},
   "ranch": {:hex, :ranch, "1.0.0", "e3ac054e4265de77e2d2696dd7e1d6a67b7525aade13ba10c860e7f499a0d433", [:make], []}}

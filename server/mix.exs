@@ -22,8 +22,9 @@ defmodule Lotsa.Mixfile do
   defp deps do
     [
       {:cowboy, "~> 1.0.0"},
-      {:exprotobuf, "~> 1.2.0"},
-      {:gproc, "0.6.1"}
+      {:exprotobuf, "~> 1.2.9"},
+      {:gproc, "0.6.1"},
+      {:json, "~> 1.0"}
     ]
   end
 end
