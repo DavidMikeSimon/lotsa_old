@@ -1,4 +1,4 @@
-defmodule Lotsa.UniverseJS do
+defmodule Lotsa.HingePort do
   # TODO Factor out common stuff into new node_erlastic behavior
 
   defmodule JSError do
@@ -43,9 +43,9 @@ defmodule Lotsa.UniverseJS do
   ####
 
   def init({options}) do
-    :gproc.reg({:n, :l, :universe_js}) # FIXME temporary
+    :gproc.reg({:n, :l, :hinge_port}) # FIXME temporary
 
-    js_path = Path.expand Path.join(["..", "universe_js", "server.js"])
+    js_path = Path.expand Path.join(["..", "hinge", "server.js"])
     port = Port.open(
       {:spawn, "node #{js_path}"},
       [:binary, :exit_status, packet: 4]

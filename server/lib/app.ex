@@ -3,7 +3,7 @@ defmodule Lotsa.App do
 
   def start(_type, _args) do
     Lotsa.SimulatorSupervisor.start_link()
-    Lotsa.UniverseJS.start_link()
+    Lotsa.HingePort.start_link()
 
     {:ok, _} = :cowboy.start_http(:http, 100, [port: 3000], [env: [
       dispatch: :cowboy_router.compile([

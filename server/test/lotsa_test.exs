@@ -1,16 +1,16 @@
 defmodule LotsaTest do
   use ExUnit.Case
 
-  def universe_js_pid() do
-    # FIXME: Maybe should start UniverseJS in test, not in app
-    :gproc.lookup_pid({:n, :l, :universe_js})
+  def hinge_port_pid() do
+    # FIXME: Maybe should start HingePort in test, not in app
+    :gproc.lookup_pid({:n, :l, :hinge_port})
   end
 
-  test "connecting to UniverseJS" do
-    assert "pong" == Lotsa.UniverseJS.ping(universe_js_pid())
+  test "connecting to HingePort" do
+    assert "pong" == Lotsa.HingePort.ping(hinge_port_pid())
   end
 
-  test "creating a UniverseDef from a minimal config with UniverseJS" do
+  test "creating a UniverseDef from a minimal config with HingePort" do
     config = JSON.encode!([
       url: "http://example.com/lotsa/1",
       plugins: [ ["basis", "*"] ]
@@ -38,6 +38,6 @@ defmodule LotsaTest do
       }
     }
 
-    assert expected == Lotsa.UniverseJS.load_config(universe_js_pid(), config)
+    assert expected == Lotsa.HingePort.load_config(hinge_port_pid(), config)
   end
 end
