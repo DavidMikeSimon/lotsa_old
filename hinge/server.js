@@ -52,7 +52,7 @@ function loadPluginConfig(udef, [pluginName, versionSpec]) {
 
 function loadConfig(config, protoRoot) {
   const udef = config.plugins.reduce(loadPluginConfig, { url: config.url });
-  return protoRoot.lookupType("LotsaProto.UniverseDef").encode(udef).finish();
+  return protoRoot.lookupType("UniverseDef").encode(udef).finish();
 }
 
 function main() {

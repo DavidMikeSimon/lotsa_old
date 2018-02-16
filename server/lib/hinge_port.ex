@@ -69,7 +69,7 @@ defmodule Lotsa.HingePort do
       {:error, {_, _, _, msg, trace}} ->
         raise JSError, summary: msg, trace: trace
       {:protobuf, :UniverseDef, bin} ->
-        {:reply, Lotsa.Proto.UniverseDef.decode(bin), port}
+        {:reply, Lotsa.Proto.UniverseDef.decode!(bin), port}
       _ ->
         {:reply, response, port}
     end

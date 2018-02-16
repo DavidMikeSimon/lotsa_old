@@ -1,23 +1,23 @@
-package LotsaProto;
+syntax = "proto3";
 
 ///////////////////
 // Common
 ///////////////////
 
 message Coord {
-  required sint32 universe = 1;
-  required sint32 grid = 2;
-  required sint32 x = 3;
-  required sint32 y = 4;
+  sint32 universe = 1;
+  sint32 grid = 2;
+  sint32 x = 3;
+  sint32 y = 4;
 }
 
 message Chunk {
-  required Coord pos = 1;
-  required sint32 ver = 2;
+  Coord pos = 1;
+  sint32 ver = 2;
 
   message BlockRun {
-    required uint32 count = 1;
-    required uint32 block_type = 2;
+    uint32 count = 1;
+    uint32 block_type = 2;
   }
 
   repeated BlockRun block_runs = 3;
@@ -37,14 +37,14 @@ message GenericValue {
 
 message PluginDescription {
   message Version {
-    required uint32 major = 1;
-    required uint32 minor = 2;
-    required uint32 patch = 3;
+    uint32 major = 1;
+    uint32 minor = 2;
+    uint32 patch = 3;
   }
 
-  required string name = 1;
-  required Version version = 2;
-  required uint32 load_order = 3;
+  string name = 1;
+  Version version = 2;
+  uint32 load_order = 3;
   repeated string lua_impls = 4;
 }
 
@@ -58,12 +58,12 @@ message BooleanExpression {
 
 message InputExpression {
   message FetchValue {
-    required uint32 property = 1;
+    uint32 property = 1;
   }
 
   message CountWhere {
-    required uint32 property = 1;
-    required BooleanExpression b_expr = 2;
+    uint32 property = 1;
+    BooleanExpression b_expr = 2;
   }
 
   oneof e {
@@ -75,19 +75,19 @@ message InputExpression {
 message BlockTypeDef {
   message PropertyProvision {
     message FixedValue {
-      required GenericValue value = 1;
+      GenericValue value = 1;
     }
 
-    required uint32 property = 1;
+    uint32 property = 1;
 
     oneof source {
       FixedValue fixed_value = 10;
     }
   }
 
-  required string plugin_name = 1;
-  required string name = 2;
-  required uint32 index = 3;
+  string plugin_name = 1;
+  string name = 2;
+  uint32 index = 3;
   repeated PropertyProvision property_provisions = 4;
   map<string, string> client_hints = 5;
 }
@@ -97,22 +97,22 @@ message PropertyDef {
     BOOLEAN = 0;
   }
 
-  required string plugin_name = 1;
-  required string name = 2;
-  required uint32 index = 3;
-  required PropType prop_type = 4;
-  required GenericValue default_value = 5;
+  string plugin_name = 1;
+  string name = 2;
+  uint32 index = 3;
+  PropType prop_type = 4;
+  GenericValue default_value = 5;
 }
 
 message BlockInputDef {
   message SelfTarget {}
   message ChebyshevNeighborsTarget {
-    required uint32 range = 1;
+    uint32 range = 1;
   }
 
-  required string plugin_name = 1;
-  required string name = 2;
-  required uint32 index = 3;
+  string plugin_name = 1;
+  string name = 2;
+  uint32 index = 3;
 
   oneof target {
     SelfTarget self = 10;
@@ -122,26 +122,26 @@ message BlockInputDef {
 
 message BlockRuleDef {
   message Prereq {
-    required string name = 1;
-    required uint32 block_input = 2;
-    required BooleanExpression b_expr = 3;
+    string name = 1;
+    uint32 block_input = 2;
+    BooleanExpression b_expr = 3;
   }
 
-  required string plugin_name = 1;
-  required string name = 2;
-  required uint32 index = 3;
+  string plugin_name = 1;
+  string name = 2;
+  uint32 index = 3;
   repeated Prereq prereqs = 4;
   repeated uint32 updaters_called = 5;
 }
 
 message BlockUpdaterDef {
-  required string plugin_name = 1;
-  required string name = 2;
-  required uint32 index = 3;
+  string plugin_name = 1;
+  string name = 2;
+  uint32 index = 3;
 }
 
 message UniverseDef {
-  required string url = 1;
+  string url = 1;
   map<string, PluginDescription> plugins = 2;
   // All keys below are in the format "plugin:name", e.g. "basis:empty"
   map<string, PropertyDef> properties = 3;

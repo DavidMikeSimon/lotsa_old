@@ -13,7 +13,7 @@ defmodule Lotsa.Mixfile do
   def application do
     [
       applications: [
-        :logger, :cowboy, :exprotobuf, :gproc, :runtime_tools
+        :logger, :cowboy, :gproc, :protox, :runtime_tools
       ],
       mod: {Lotsa.App, []}
     ]
@@ -22,7 +22,7 @@ defmodule Lotsa.Mixfile do
   defp deps do
     [
       {:cowboy, "~> 1.0.0"},
-      {:exprotobuf, "~> 1.2.9"},
+      {:protox, "~> 0.16.1"},
       {:gproc, "0.6.1"},
       {:json, "~> 1.0"}
     ]

@@ -24,7 +24,7 @@ defmodule LotsaTest do
           name: "unknown",
           index: 0,
           client_hints: %{
-            color: "#000",
+            "color" => "#000",
           }
         },
         "basis:empty" => %Lotsa.Proto.BlockTypeDef{
@@ -32,7 +32,7 @@ defmodule LotsaTest do
           name: "empty",
           index: 1,
           client_hints: %{
-            color: "#fff",
+            "color" => "#fff",
           }
         }
       }
