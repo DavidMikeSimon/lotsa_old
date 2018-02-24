@@ -5,30 +5,89 @@ const _ = require('lodash');
 const erlastic = require('node_erlastic');
 const bert = erlastic.bert;
 
-class PluginSetupHelper {
+class BlockTypeWrapper {
+  constructor(blockType) {
+    this._blockType = blockType;
+  }
+
+  getIndex() {
+    return this._blockType.index;
+  }
+
+  provideProperty(prop, source) {
+    let protoSource;
+    if (source.hasOwnProperty("$constant")) {
+      // FIXME In the proto, we just end up with nil source :-(
+      protoSource = { fixedValue: source.$constant };
+    } else {
+      throw new Error("Can't figure out source " + JSON.stringify(source));
+    }
+
+    this._blockType.propertyProvisions.push({
+      property: prop.getIndex(),
+      source: protoSource,
+    });
+
+    return this;
+  }
+}
+
+class PropertyWrapper {
+  constructor(property) {
+    this._property = property;
+  }
+
+  getIndex() {
+    return this._property.index;
+  }
+}
+
+class PluginSetup {
   constructor(pluginName, priorUniverseDef) {
     this._pluginName = pluginName;
     this._universeDef = Object.assign(
       {},
       {
-        blockTypes: {}
+        blockTypes: {},
+        properties: {},
       },
       priorUniverseDef
     );
 
     this._nextBlockIndex = _.max(_.map(this._universeDef.blockTypes, 'index')) || 0;
+    this._nextPropIndex = _.max(_.map(this._universeDef.properties, 'index')) || 0;
   }
 
-  defineBlockType(name, options) {
+  defBlockType(name, options = {}) {
     const fullName = this._pluginName + ":" + name;
-    this._universeDef.blockTypes[fullName] = {
+    const blockType = {
       index: this._nextBlockIndex,
       pluginName: this._pluginName,
       name: name,
       clientHints: options.clientHints || {},
       propertyProvisions: [],
     };
+
+    this._universeDef.blockTypes[fullName] = blockType;
     this._nextBlockIndex += 1;
+
+    return new BlockTypeWrapper(blockType);
+  }
+
+  defProperty(name, type, options = {}) {
+    const fullName = this._pluginName + ":" + name;
+    const property = {
+      index: this._nextPropIndex,
+      pluginName: this._pluginName,
+      name: name,
+      type: type,
+      defaultValue: options.defaultValue || null,
+    };
+
+    this._universeDef.properties[fullName] = property;
+    this._nextPropIndex += 1;
+
+    return new PropertyWrapper(property);
   }
 
   getUniverseDef() {
@@ -45,9 +104,9 @@ function getPluginDef(pluginName, versionSpec) {
 
 function loadPluginConfig(udef, [pluginName, versionSpec]) {
   const pdef = getPluginDef(pluginName, versionSpec);
-  const helper = new PluginSetupHelper(pluginName, udef);
-  pdef.setup(helper);
-  return helper.getUniverseDef();
+  const setup = new PluginSetup(pluginName, udef);
+  pdef.setup(setup);
+  return setup.getUniverseDef();
 }
 
 function loadConfig(config, protoRoot) {

@@ -1,7 +1,7 @@
 defmodule LotsaTest do
   use ExUnit.Case
 
-  def hinge_port_pid() do
+  defp hinge_port_pid() do
     # FIXME: Maybe should start HingePort in test, not in app
     :gproc.lookup_pid({:n, :l, :hinge_port})
   end
@@ -11,10 +11,10 @@ defmodule LotsaTest do
   end
 
   test "creating a UniverseDef from a minimal config with HingePort" do
-    config = JSON.encode!([
+    config = %{
       url: "http://example.com/lotsa/1",
       plugins: [ ["basis", "*"] ]
-    ])
+    }
 
     expected = %Lotsa.Proto.UniverseDef{
       url: "http://example.com/lotsa/1",

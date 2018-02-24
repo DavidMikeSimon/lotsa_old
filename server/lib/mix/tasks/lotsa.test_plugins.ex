@@ -3,8 +3,14 @@ defmodule Mix.Tasks.Lotsa.TestPlugins do
 
   @shortdoc "Runs Lua tests for Lotsa plugins"
 
+  defp hinge_port_pid() do
+    # FIXME: Maybe should start HingePort in test, not in app
+    :gproc.lookup_pid({:n, :l, :hinge_port})
+  end
+
   def run(args) do
     :gproc.start_link()
+    Lotsa.HingePort.start_link()
 
     path_parts = [Mix.Project.build_path, "..", "..", "..", "plugins"]
     plugins_dir = Path.expand Path.join(path_parts)
@@ -14,15 +20,15 @@ defmodule Mix.Tasks.Lotsa.TestPlugins do
     end
 
     Enum.each target_plugins, fn plugin ->
-      test_path = Path.join([plugins_dir, plugin, "tests.lua"])
+      test_path = Path.join([plugins_dir, plugin, "tests.js"])
       if File.exists?(test_path) do
         IO.puts("Testing plugin \"#{plugin}\"")
         universe_def = setup_test_universe(plugin)
         IO.inspect(universe_def)
-        testset = Lotsa.LuaHelpers.run_script(test_path)
-        Enum.each testset["tests"], fn {name, test} ->
-          run_test(universe_def, testset, "#{plugin}::#{name}", test)
-        end
+        # testset = Lotsa.LuaHelpers.run_script(test_path)
+        # Enum.each testset["tests"], fn {name, test} ->
+          # run_test(universe_def, testset, "#{plugin}::#{name}", test)
+        # end
       else
         # TODO Complain if the plugin doesn't exist at all
         IO.puts("No tests provided for plugin \"#{plugin}\"")
@@ -31,7 +37,13 @@ defmodule Mix.Tasks.Lotsa.TestPlugins do
   end
 
   defp setup_test_universe(plugin) do
-    Lotsa.UniverseDefHelpers.new_from_config(0, %{plugins: [[plugin, "*"]]})
+    Lotsa.HingePort.load_config(
+      hinge_port_pid(),
+      %{
+        url: "test://#{plugin}",
+        plugins: [ [plugin, "*"] ]
+      }
+    )
   end
 
   defp run_test(universe_def, testset, test_name, test) do

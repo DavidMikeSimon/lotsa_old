@@ -4,9 +4,9 @@ module.exports = {
   dependencies: {},
   setup: (p) => {
     // Must have block type index 0
-    p.defineBlockType("unknown", { clientHints: { color: "#000" } });
+    p.defBlockType("unknown", { clientHints: { color: "#000" } });
 
     // Must have block type index 1
-    p.defineBlockType("empty", { clientHints: { color: "#fff" } });
+    p.defBlockType("empty", { clientHints: { color: "#fff" } });
   },
 };

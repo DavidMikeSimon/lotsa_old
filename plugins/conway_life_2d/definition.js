@@ -5,17 +5,19 @@ module.exports = {
     basis: "*",
   },
   setup: (p) => {
-    p.defProperty("isAlive", "boolean", {
+    const isAlive = p.defProperty("isAlive", "boolean", {
       defaultValue: false,
     });
 
-    p.defProperty("isLifeSpawnable", "boolean", {
+    const isLifeSpawnable = p.defProperty("isLifeSpawnable", "boolean", {
       defaultValue: false,
     });
 
     p.defBlockType("life", {
         clientHints: { color: "#00f" },
     }).provideProperty(isAlive, { $constant: true });
+    
+    return;
 
     p.getDependency("basis")
       .getBlockType("empty")
@@ -27,17 +29,17 @@ module.exports = {
     ] };
 
     p.defBlockRule("spawning")
-      .addPrereq("canSpawn", { $eq: [ "isLifeSpawnable", true ] })
+      .addPrereq("canSpawn", { $eq: [ isLifeSpawnable, true ] })
       .addPrereq("hasParents", { $eq: [ NUM_NEIGHBORS_ALIVE, 3 ] })
       .callBlockUpdater("spawn");
 
     p.defBlockRule("underpopDeath")
-      .addPrereq("alive", { $eq: [ "isAlive", true ] })
+      .addPrereq("alive", { $eq: [ isAlive, true ] })
       .addPrereq("tooFewNeighbors", { $lt: [ NUM_NEIGHBORS_ALIVE, 2 ] })
       .callBlockUpdater("death");
 
     p.defBlockRule("overpopDeath")
-      .addPrereq("alive", { $eq: [ "isAlive", true ] })
+      .addPrereq("alive", { $eq: [ isAlive, true ] })
       .addPrereq("tooManyNeighbors", { $gt: [ NUM_NEIGHBORS_ALIVE, 4 ] })
       .callBlockUpdater("death");
   },

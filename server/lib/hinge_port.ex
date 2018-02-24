@@ -30,7 +30,10 @@ defmodule Lotsa.HingePort do
     GenServer.call(pid, {:ping, {}})
   end
 
-  def load_config(pid, json) do
+  def load_config(pid, json) when is_list(json) or is_map(json) do
+    load_config(pid, JSON.encode!(json))
+  end
+  def load_config(pid, json) when is_binary(json) do
     GenServer.call(pid, {:load_config, {json}})
   end
 
