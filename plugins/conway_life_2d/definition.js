@@ -1,9 +1,9 @@
 module.exports = {
   protocol: 1,
   version: "0.0.1",
-  dependencies: {
-    basis: "*",
-  },
+  dependencies: [
+    [basis, "*"],
+  ],
   setup: (p) => {
     const isAlive = p.defProperty("isAlive", "boolean", {
       defaultValue: false,
@@ -16,12 +16,11 @@ module.exports = {
     p.defBlockType("life", {
         clientHints: { color: "#00f" },
     }).provideProperty(isAlive, { $constant: true });
-    
+
     return;
 
-    p.getDependency("basis")
-      .getBlockType("empty")
-      .provideProperty(isLifeSpawnable, { $constant: true });
+    p.getBlockType("basis:empty")
+     .provideProperty(isLifeSpawnable, { $constant: true });
 
     const NUM_NEIGHBORS_ALIVE = { $count: [
       { $chebyshev: 1 },
