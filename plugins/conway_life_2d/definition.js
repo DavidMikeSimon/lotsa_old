@@ -2,7 +2,7 @@ module.exports = {
   protocol: 1,
   version: "0.0.1",
   dependencies: [
-    [basis, "*"],
+    ["basis", "*"],
   ],
   setup: (p) => {
     const isAlive = p.defProperty("isAlive", "boolean", {
@@ -17,10 +17,11 @@ module.exports = {
         clientHints: { color: "#00f" },
     }).provideProperty(isAlive, { $constant: true });
 
-    return;
-
     p.getBlockType("basis:empty")
      .provideProperty(isLifeSpawnable, { $constant: true });
+
+    const buSpawn = p.defBlockUpdater(name);
+    const buDeath = p.defBlockUpdater(death);
 
     const NUM_NEIGHBORS_ALIVE = { $count: [
       { $chebyshev: 1 },
@@ -30,16 +31,16 @@ module.exports = {
     p.defBlockRule("spawning")
       .addPrereq("canSpawn", { $eq: [ isLifeSpawnable, true ] })
       .addPrereq("hasParents", { $eq: [ NUM_NEIGHBORS_ALIVE, 3 ] })
-      .callBlockUpdater("spawn");
+      .callBlockUpdater(buSpawn);
 
     p.defBlockRule("underpopDeath")
       .addPrereq("alive", { $eq: [ isAlive, true ] })
       .addPrereq("tooFewNeighbors", { $lt: [ NUM_NEIGHBORS_ALIVE, 2 ] })
-      .callBlockUpdater("death");
+      .callBlockUpdater(buDeath);
 
     p.defBlockRule("overpopDeath")
       .addPrereq("alive", { $eq: [ isAlive, true ] })
       .addPrereq("tooManyNeighbors", { $gt: [ NUM_NEIGHBORS_ALIVE, 4 ] })
-      .callBlockUpdater("death");
+      .callBlockUpdater(buDeath);
   },
 };

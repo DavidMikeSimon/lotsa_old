@@ -69,6 +69,41 @@ class PropertyWrapper {
   }
 }
 
+class BlockUpdaterWrapper {
+  constructor(updater) {
+    this._updater = updater;
+  }
+
+  getIndex() {
+    return this._updater.index;
+  }
+}
+
+class BlockRuleWrapper {
+  constructor(rule) {
+    this._rule = rule;
+  }
+
+  getIndex() {
+    return this._rule.index;
+  }
+
+  addPrereq(name, prereqDef) {
+    this._rule.prereqs.push({
+      name: name,
+
+    });
+
+    return this;
+  }
+
+  cadllBlockUpdater(updater) {
+    this._rule.updaters.push(updater.getIndex());
+
+    return this;
+  }
+}
+
 class PluginSetup {
   constructor(pluginName, universeDef) {
     this._pluginName = pluginName;
@@ -76,15 +111,19 @@ class PluginSetup {
     this._universeDef = universeDef || {};
     if (!this._universeDef.blockTypes) { this._universeDef.blockTypes = {}; }
     if (!this._universeDef.properties) { this._universeDef.properties = {}; }
+    if (!this._universeDef.blockUpdaters) { this._universeDef.blockUpdaters = {}; }
+    if (!this._universeDef.blockRules) { this._universeDef.blockRules = {}; }
 
-    this._nextBlockIndex = _.max(_.map(this._universeDef.blockTypes, 'index')) || 0;
-    this._nextPropIndex = _.max(_.map(this._universeDef.properties, 'index')) || 0;
+    this._nextBlockTypeIndex = _.max(_.map(this._universeDef.blockTypes, 'index')) || 0;
+    this._nextPropertyIndex = _.max(_.map(this._universeDef.properties, 'index')) || 0;
+    this._nextBlockUpdaterIndex = _.max(_.map(this._universeDef.blockUpdaters, 'index')) || 0;
+    this._nextBlockRuleIndex = _.max(_.map(this._universeDef.blockRules, 'index')) || 0;
   }
 
   defBlockType(name, options = {}) {
     const fullName = this._pluginName + ":" + name;
     const blockType = {
-      index: this._nextBlockIndex,
+      index: this._nextBlockTypeIndex,
       pluginName: this._pluginName,
       name: name,
       clientHints: options.clientHints || {},
@@ -92,7 +131,7 @@ class PluginSetup {
     };
 
     this._universeDef.blockTypes[fullName] = blockType;
-    this._nextBlockIndex += 1;
+    this._nextBlockTypeIndex += 1;
 
     return new BlockTypeWrapper(blockType);
   }
@@ -100,7 +139,7 @@ class PluginSetup {
   defProperty(name, type, options = {}) {
     const fullName = this._pluginName + ":" + name;
     const property = {
-      index: this._nextPropIndex,
+      index: this._nextPropertyIndex,
       pluginName: this._pluginName,
       name: name,
       type: type,
@@ -108,9 +147,39 @@ class PluginSetup {
     };
 
     this._universeDef.properties[fullName] = property;
-    this._nextPropIndex += 1;
+    this._nextPropertyIndex += 1;
 
     return new PropertyWrapper(property);
+  }
+
+  defBlockUpdater(name) {
+    const fullName = this._pluginName + ":" + name;
+    const updater = {
+      index: this._nextBlockUpdaterIndex,
+      pluginName: this._pluginName,
+      name: name,
+    };
+
+    this._universeDef.blockUpdaters[fullName] = updater;
+    this._nextBlockUpdaterIndex += 1;
+
+    return new BlockUpdaterWrapper(updater);
+  }
+
+  defBlockRule(name) {
+    const fullName = this._pluginName + ":" + name;
+    const rule = {
+      index: this._nextBlockRuleIndex,
+      pluginName: this._pluginName,
+      name: name,
+      prereqs: [],
+      updatersCalled: [],
+    };
+
+    this._universeDef.blockRules[fullName] = rule;
+    this._nextBlockRuleIndex += 1;
+
+    return new BlockRuleWrapper(rule);
   }
 
   getUniverseDef() {

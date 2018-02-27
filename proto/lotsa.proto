@@ -48,6 +48,7 @@ message PluginDescription {
   repeated string lua_impls = 4;
 }
 
+// TODO: Include operands
 message BooleanExpression {
   oneof fn {
     GenericValue eq = 10;
@@ -123,15 +124,15 @@ message BlockInputDef {
 message BlockRuleDef {
   message Prereq {
     string name = 1;
-    uint32 block_input = 2;
-    BooleanExpression b_expr = 3;
+    BooleanExpression b_expr = 2;
   }
 
   string plugin_name = 1;
   string name = 2;
   uint32 index = 3;
+  // TODO Make prereqs a map
   repeated Prereq prereqs = 4;
-  repeated uint32 updaters_called = 5;
+  repeated uint32 updaters = 5;
 }
 
 message BlockUpdaterDef {
