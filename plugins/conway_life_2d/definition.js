@@ -20,12 +20,12 @@ module.exports = {
     p.getBlockType("basis:empty")
      .provideProperty(isLifeSpawnable, { $constant: true });
 
-    const buSpawn = p.defBlockUpdater(name);
-    const buDeath = p.defBlockUpdater(death);
+    const buSpawn = p.defBlockUpdater("spawn");
+    const buDeath = p.defBlockUpdater("death");
 
     const NUM_NEIGHBORS_ALIVE = { $count: [
       { $chebyshev: 1 },
-      { $filter: { $eq: [ "isAlive", true ] } },
+      { $eq: [ "isAlive", true ] },
     ] };
 
     p.defBlockRule("spawning")

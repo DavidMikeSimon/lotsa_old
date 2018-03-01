@@ -1,6 +1,6 @@
 module.exports = {
   protocol: 1,
-  version: "0.0.1",
+  version: "1.0.0",
   dependencies: [],
   setup: (p) => {
     // Must have block type index 0

@@ -45,31 +45,46 @@ message PluginDescription {
   string name = 1;
   Version version = 2;
   uint32 load_order = 3;
-  repeated string lua_impls = 4;
 }
 
-// TODO: Include operands
-message BooleanExpression {
-  oneof fn {
-    GenericValue eq = 10;
-    GenericValue lt = 11;
-    GenericValue gt = 12;
+message ConditionalExpression {
+  enum Operator {
+    EQ = 0;
+    LT = 1;
+    GT = 2;
   }
+
+  ValueExpression left = 1;
+  Operator operator = 2;
+  ValueExpression right = 3;
 }
 
-message InputExpression {
-  message FetchValue {
+message ValueExpression {
+  message FetchBlockProperty {
     uint32 property = 1;
   }
 
-  message CountWhere {
-    uint32 property = 1;
-    BooleanExpression b_expr = 2;
+  message CountBlocks {
+    BlockTarget target = 1;
+    ConditionalExpression filter = 2;
   }
 
   oneof e {
-    FetchValue fetch_value = 10;
-    CountWhere count_where = 11;
+    GenericValue constant = 10;
+    FetchBlockProperty fetch_block_property = 11;
+    CountBlocks count_blocks = 12;
+  }
+}
+
+message BlockTarget {
+  message SelfTarget {}
+  message ChebyshevNeighborsTarget {
+    uint32 range = 1;
+  }
+
+  oneof target {
+    SelfTarget self = 10;
+    ChebyshevNeighborsTarget chebyshev_neighbors = 11;
   }
 }
 
@@ -105,33 +120,11 @@ message PropertyDef {
   GenericValue default_value = 5;
 }
 
-message BlockInputDef {
-  message SelfTarget {}
-  message ChebyshevNeighborsTarget {
-    uint32 range = 1;
-  }
-
-  string plugin_name = 1;
-  string name = 2;
-  uint32 index = 3;
-
-  oneof target {
-    SelfTarget self = 10;
-    ChebyshevNeighborsTarget chebyshev_neighbors = 5;
-  }
-}
-
 message BlockRuleDef {
-  message Prereq {
-    string name = 1;
-    BooleanExpression b_expr = 2;
-  }
-
   string plugin_name = 1;
   string name = 2;
   uint32 index = 3;
-  // TODO Make prereqs a map
-  repeated Prereq prereqs = 4;
+  map<string, ConditionalExpression> prereqs = 4;
   repeated uint32 updaters = 5;
 }
 

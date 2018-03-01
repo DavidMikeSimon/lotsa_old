@@ -18,6 +18,17 @@ defmodule LotsaTest do
 
     expected = %Lotsa.Proto.UniverseDef{
       url: "http://example.com/lotsa/1",
+      plugins: %{
+        "basis" => %Lotsa.Proto.PluginDescription{
+          name: "basis",
+          version: %Lotsa.Proto.PluginDescription.Version{
+            major: 1,
+            minor: 0,
+            patch: 0
+          },
+          load_order: 0
+        }
+      },
       block_types: %{
         "basis:unknown" => %Lotsa.Proto.BlockTypeDef{
           plugin_name: "basis",
