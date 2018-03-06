@@ -50,26 +50,26 @@ function buildConditionalExpr(obj) {
 
 function buildValueExpr(val) {
   if (_.isString(val)) {
-    return { e: { constant: { v: { string: val } } } };
+    return { constant: { string: val } };
   } else if (_.isInteger(val)) {
-    return { e: { constant: { v: { integer: val } } } };
+    return { constant: { integer: val } };
   } else if (_.isBoolean(val)) {
-    return { e: { constant: { v: { boolean: val } } } };
+    return { constant: { boolean: val } };
   } else if (_.isObject(val)) {
     if (val['$count']) {
-      return { e: { countBlocks: {
+      return { countBlocks: {
         target: buildBlockTarget(val['$count'][0]),
         filter: buildConditionalExpr(val['$count'][1]),
-      } } };
+      } };
     } else if (val.constructor == PropertyWrapper) {
-      return { e: { fetchBlockProperty: { property: val.getIndex() } } };
+      return { fetchBlockProperty: { property: val.getIndex() } };
     }
   }
 
   throw new Error("Unknown value expression");
 }
 
-function buildBlockTarget(val) {
+function buildBlockTarget(obj) {
   if (_.size(obj) != 1) {
     throw new Error("Block target objects must have one key");
   }
@@ -78,7 +78,7 @@ function buildBlockTarget(val) {
   const val = obj[key];
 
   if (key == '$chebyshev') {
-    // TODO
+    return { chebyshevNeighbors: { range: val } };
   }
 }
 
@@ -139,8 +139,7 @@ class BlockRuleWrapper {
   }
 
   addPrereq(name, prereqDef) {
-    console.error(prereqDef);
-    this._rule.prereqs[name] = prereqDef;
+    this._rule.prereqs[name] = buildConditionalExpr(prereqDef);
 
     return this;
   }
@@ -158,11 +157,12 @@ class PluginSetup {
 
     this._universeDef = universeDef || {};
 
-    const versionParts = pluginDef.version.split(".").map((s) => parseInt(s))
     if (!this._universeDef.plugins) { this._universeDef.plugins = {}; }
+    const versionParts = pluginDef.version.split(".").map((s) => parseInt(s))
+    const maxLoadOrder = _.max(_.map(this._universeDef.plugins, 'loadOrder'));
     this._universeDef.plugins[pluginName] = {
       name: pluginName,
-      loadOrder: (_.max(_.map(this._universeDef.blockTypes, 'index')) || -1) + 1,
+      loadOrder: _.isUndefined(maxLoadOrder) ? 0 : maxLoadOrder + 1,
       version: {
         major: versionParts[0],
         minor: versionParts[1],
