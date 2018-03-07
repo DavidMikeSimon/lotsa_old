@@ -21,7 +21,7 @@ function main() {
               return done("reply", "pong");
             case "load_config":
               const config = JSON.parse(args[0]);
-              const udef = universeDefSetup.loadConfig(PLUGIN_PATHS, config);
+              const udef = universeDefSetup.loadConfig(protoRoot, PLUGIN_PATHS, config);
               return done("reply", new Tuple(
                 bert.atom("protobuf"),
                 bert.atom("UniverseDef"),
