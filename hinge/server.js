@@ -9,7 +9,6 @@ const PLUGIN_PATHS = [
   "../plugins"
 ];
 
-
 function main() {
   ProtoBuf.load("../proto/lotsa.proto").then((protoRoot) => {
     erlastic.server(
@@ -21,7 +20,8 @@ function main() {
               return done("reply", "pong");
             case "load_config":
               const config = JSON.parse(args[0]);
-              const udef = universeDefSetup.loadConfig(protoRoot, PLUGIN_PATHS, config);
+              const loader = new universeDefSetup.Loader(protoRoot, PLUGIN_PATHS);
+              const udef = loader.loadConfig(config);
               return done("reply", new Tuple(
                 bert.atom("protobuf"),
                 bert.atom("UniverseDef"),

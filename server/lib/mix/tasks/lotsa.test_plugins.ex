@@ -24,7 +24,7 @@ defmodule Mix.Tasks.Lotsa.TestPlugins do
       if File.exists?(test_path) do
         IO.puts("Testing plugin \"#{plugin}\"")
         universe_def = setup_test_universe(plugin)
-        IO.inspect(universe_def.block_rules)
+        IO.inspect(universe_def)
         # testset = Lotsa.LuaHelpers.run_script(test_path)
         # Enum.each testset["tests"], fn {name, test} ->
           # run_test(universe_def, testset, "#{plugin}::#{name}", test)
