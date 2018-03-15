@@ -3,11 +3,11 @@ module.exports = {
     const btLife = i.fetchBlockType("conwayLife2d", "life");
     const btEmpty = i.fetchBlockType("basis", "empty");
 
-    i.implement("spawn", {}, () => {
+    i.blockUpdater("spawn", {}, () => {
       return { blockType: btLife };
     });
 
-    i.implement("death", {}, () => {
+    i.blockUpdater("death", {}, () => {
       return { blockType: btEmpty };
     });
   }

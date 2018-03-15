@@ -13,7 +13,7 @@ function main() {
   ProtoBuf.load("../proto/lotsa.proto").then((protoRoot) => {
     erlastic.server(
       // Response loop
-      (term, _from, _state, done) => {
+      (term, _from, state, done) => {
         term.unpack((command, args) => {
           switch (command.toString()) {
             case "ping":
@@ -22,11 +22,17 @@ function main() {
               const config = JSON.parse(args[0]);
               const loader = new universeDefSetup.Loader(protoRoot, PLUGIN_PATHS);
               const udef = loader.loadConfig(config);
-              return done("reply", new Tuple(
+
+              const newImplementation = loader.loadImplementation(udef);
+              const newState = { implementation: newImplementation };
+
+              const reply = new Tuple(
                 bert.atom("protobuf"),
                 bert.atom("UniverseDef"),
                 protoRoot.lookupType("UniverseDef").encode(udef).finish()
-              ));
+              );
+
+              return done("reply", reply, newState);
             default:
               throw new Error("unknown command " + command)
           }
@@ -35,7 +41,9 @@ function main() {
 
       // Init
       () => {
-        return {};
+        return {
+          implementation: {}
+        };
       }
     );
   });
