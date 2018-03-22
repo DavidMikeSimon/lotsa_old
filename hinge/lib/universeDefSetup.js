@@ -1,9 +1,8 @@
 const _ = require("lodash");
-const path = require('path');
-const fs = require('fs');
 
 const { PluginSetup } = require('./pluginSetup');
 const { ImplSetup } = require('./implSetup');
+const { getPluginFilePath } = require('./common');
 
 class Loader {
   constructor(protoRoot, searchPaths) {
@@ -13,15 +12,12 @@ class Loader {
     this.searchPaths = searchPaths;
   }
 
-  getPluginFilePath(fileName, pluginName, _versionSpec) {
-    // TODO: Validate pluginName
-    // TODO: Check against versionSpec
-    const possiblePaths = _.map(this.searchPaths, (p) => path.resolve(p, pluginName, fileName));
-    const pluginFilePath = _.find(possiblePaths, fs.existsSync);
-    if (!pluginFilePath) {
+  getPluginFilePath(fileName, pluginName, versionSpec) {
+    const path = getPluginFilePath(fileName, pluginName, versionSpec, this.searchPaths);
+    if (!path) {
       throw new Error("No such plugin '" + pluginName + "' found in search paths");
     }
-    return pluginFilePath;
+    return path;
   }
 
   getPluginDef(pluginName, verisonSpec) {

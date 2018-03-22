@@ -37,6 +37,10 @@ defmodule Lotsa.HingePort do
     GenServer.call(pid, {:load_config, {json}})
   end
 
+  def load_tests(pid, plugin_name) do
+    GenServer.call(pid, {:load_tests, {plugin_name}})
+  end
+
   def stop(pid) do
     GenServer.stop(pid)
   end

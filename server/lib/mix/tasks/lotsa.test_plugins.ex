@@ -12,27 +12,29 @@ defmodule Mix.Tasks.Lotsa.TestPlugins do
     :gproc.start_link()
     Lotsa.HingePort.start_link()
 
-    path_parts = [Mix.Project.build_path, "..", "..", "..", "plugins"]
-    plugins_dir = Path.expand Path.join(path_parts)
+    plugins_dir = [Mix.Project.build_path, "..", "..", "..", "plugins"] |> Path.join |> Path.expand
     target_plugins = case args do
       [] -> File.ls!(plugins_dir)
       targets -> targets
     end
 
     Enum.each target_plugins, fn plugin ->
-      test_path = Path.join([plugins_dir, plugin, "tests.js"])
-      if File.exists?(test_path) do
-        IO.puts("Testing plugin \"#{plugin}\"")
-        universe_def = setup_test_universe(plugin)
-        IO.inspect(universe_def)
-        # testset = Lotsa.LuaHelpers.run_script(test_path)
-        # Enum.each testset["tests"], fn {name, test} ->
-          # run_test(universe_def, testset, "#{plugin}::#{name}", test)
-        # end
-      else
-        # TODO Complain if the plugin doesn't exist at all
-        IO.puts("No tests provided for plugin \"#{plugin}\"")
+      IO.puts("Testing plugin \"#{plugin}\"")
+      test_plugin(plugin)
+    end
+  end
+
+  defp test_plugin(plugin) do
+    testset = Lotsa.HingePort.load_tests(hinge_port_pid(), plugin)
+    IO.inspect(testset)
+    if Map.has_key?(testset, "tests") do
+      universe_def = setup_test_universe(plugin)
+      Enum.each testset["tests"], fn {name, test} ->
+        run_test(universe_def, testset, "#{plugin}::#{name}", test)
       end
+    else
+      # TODO Complain if the plugin doesn't exist at all
+      IO.puts("No tests provided for plugin \"#{plugin}\"")
     end
   end
 
@@ -54,6 +56,8 @@ defmodule Mix.Tasks.Lotsa.TestPlugins do
     {:ok, sim} = Lotsa.Simulator.start(universe_def, %{chunks: [initial_chunk]})
     try do
       {:ok, chunk} = Lotsa.Simulator.get_chunk(sim, {0,0,0,0})
+      IO.inspect(test_name)
+      IO.inspect(chunk)
     after
       Lotsa.Simulator.stop(sim)
     end

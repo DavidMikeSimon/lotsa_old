@@ -1,7 +1,7 @@
-module.exports: {
+module.exports = {
   blockTypeAliases: {
-    empty: "-",
-    life: "S"
+    "basis:empty": "-",
+    "conwayLife2d:life": "S"
   },
 
   tests: {
@@ -68,11 +68,7 @@ module.exports: {
         -S-
         -S-
       `,
-      after2: `
-        ---
-        SSS
-        ---
-      `
+      after2: { sameAs: "start" }
     }
   }
 };

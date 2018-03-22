@@ -4,12 +4,17 @@ class BlockTypeImpl {
   constructor(blockTypeDef) {
     this.blockTypeDef = blockTypeDef;
   }
+
+  getIndex() {
+    return this.blockTypeDef.index;
+  }
 }
 
 class ImplSetup {
   constructor(_loader, pluginName, universeDef) {
     this.pluginName = pluginName;
     this.udef = universeDef;
+    this.blockUpdaters = {};
   }
 
   fetchBlockType(pluginName, blockTypeName) {
@@ -20,10 +25,11 @@ class ImplSetup {
   }
 
   blockUpdater(updaterName, _argDef, fn) {
+    this.blockUpdaters[updaterName] = fn;
   }
 
   getBlockUpdaters() {
-    return {};
+    return this.blockUpdaters;
   }
 }
 
