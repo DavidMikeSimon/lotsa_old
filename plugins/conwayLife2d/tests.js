@@ -1,74 +1,70 @@
 module.exports = {
-  blockTypeAliases: {
-    "basis:empty": "-",
-    "conwayLife2d:life": "S"
+  aliases: {
+    "-": "basis:empty",
+    "S": "conwayLife2d:life"
   },
 
   tests: {
-    fallow: {
-      start: `
+    fallow: [
+      `
         ---
         ---
         ---
       `,
-      after1: { sameAs: "start" },
-      after2: { sameAs: "start" }
-    },
+      { sameAs: "start" },
+      { sameAs: "start" }
+    ],
 
-    underpopulation: {
-      start: `
+    underpopulation: [
+     `
         ---
         -S-
         ---
-      `,
-      after1: `
+      `, `
         ---
         ---
         ---
       `,
-      after2: { sameAs: "after1" }
-    },
+      { sameAs: "prev" }
+    ],
 
-    overpopulation: {
-      start: `
+    overpopulation: [
+      `
         SSS
         SSS
         SSS
-      `,
-      after1: `
+      `, `
         S-S
         ---
         S-S
-      `,
-      after2: `
+      `, `
         ---
         ---
         ---
       `
-    },
+    ],
 
-    twoByTwo: {
-      start: `
+    twoByTwo: [
+      `
         SS-
         SS-
         ---
       `,
-      after1: { sameAs: "start" },
-      after2: { sameAs: "start" }
-    },
+      { sameAs: "start" },
+      { sameAs: "start" }
+    ],
 
-    blinker: {
-      start: `
+    blinker: [
+      `
         ---
         SSS
         ---
-      `,
-      after1: `
+      `, `
         -S-
         -S-
         -S-
       `,
-      after2: { sameAs: "start" }
-    }
+      { sameAs: "start" }
+    ]
   }
 };
